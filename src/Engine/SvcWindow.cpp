@@ -49,14 +49,19 @@ bool SvcWindow::Update()
 	return true;
 }
 
+SvcWindow* SvcWindow::GetInstance()
+{
+	return ms_instance;
+}
+
 void SvcWindow::GetWindowSize(int& width, int& height)
 {
-	glfwGetWindowSize(ms_instance->m_window, &width, &height);
+	glfwGetWindowSize(m_window, &width, &height);
 }
 
 void SvcWindow::GetFramebufferSize(int& width, int& height)
 {
-	glfwGetFramebufferSize(ms_instance->m_window, &width, &height);
+	glfwGetFramebufferSize(m_window, &width, &height);
 }
 
 void SvcWindow::WaitEvents()
@@ -66,10 +71,15 @@ void SvcWindow::WaitEvents()
 
 bool SvcWindow::WindowShouldClose()
 {
-	return glfwWindowShouldClose(ms_instance->m_window);
+	return glfwWindowShouldClose(m_window);
 }
 
 VkResult SvcWindow::CreateVulkanWindowSurface(VkInstance instance, VkAllocationCallbacks* allocator, VkSurfaceKHR* surface)
 {
-	return glfwCreateWindowSurface(instance, ms_instance->m_window, allocator, surface);
+	return glfwCreateWindowSurface(instance, m_window, allocator, surface);
+}
+
+void SvcWindow::SetKeyCallback(GLFWkeyfun cb)
+{
+	glfwSetKeyCallback(m_window, cb);
 }

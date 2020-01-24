@@ -471,7 +471,7 @@ bool SvcRender::setupDebugMessenger()
 
 bool SvcRender::createSurface()
 {
-	if (SvcWindow::CreateVulkanWindowSurface(m_instance, nullptr, &m_surface) != VK_SUCCESS)
+	if (SvcWindow::GetInstance()->CreateVulkanWindowSurface(m_instance, nullptr, &m_surface) != VK_SUCCESS)
 	{
 		SvcLog::Printf(SvcLog::ELevel_Error, "failed to create window surface!");
 		return false;
@@ -1007,11 +1007,11 @@ void SvcRender::cleanupSwapChain()
 bool SvcRender::recreateSwapChain()
 {
 	int width = 0, height = 0;
-	SvcWindow::GetFramebufferSize(width, height);
+	SvcWindow::GetInstance()->GetFramebufferSize(width, height);
 	while (width == 0 || height == 0)
 	{
-		SvcWindow::GetFramebufferSize(width, height);
-		SvcWindow::WaitEvents();
+		SvcWindow::GetInstance()->GetFramebufferSize(width, height);
+		SvcWindow::GetInstance()->WaitEvents();
 	}
 
 	vkDeviceWaitIdle(m_device);
@@ -1073,7 +1073,7 @@ VkExtent2D SvcRender::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilit
 	else
 	{
 		int width, height;
-		SvcWindow::GetWindowSize(width, height);
+		SvcWindow::GetInstance()->GetWindowSize(width, height);
 		VkExtent2D actualExtent = { static_cast<uint32_t>(width), static_cast<uint32_t>(height) };
 
 		actualExtent.width = std::max(capabilities.minImageExtent.width,

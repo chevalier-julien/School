@@ -3,6 +3,7 @@
 #include "SvcTime.h"
 #include "SvcLog.h"
 #include "SvcWindow.h"
+#include "SvcInput.h"
 #include "SvcRender.h"
 
 void Application::Execute()
@@ -26,6 +27,9 @@ bool Application::Init()
 	if (!SvcWindow::Create())
 		return false;
 
+	if (!SvcInput::Create())
+		return false;
+
 	if (!SvcRender::Create())
 		return false;
 
@@ -35,6 +39,7 @@ bool Application::Init()
 void Application::Release()
 {
 	SvcRender::Destroy();
+	SvcInput::Destroy();
 	SvcWindow::Destroy();
 	SvcLog::Destroy();
 	SvcTime::Destroy();
@@ -42,7 +47,7 @@ void Application::Release()
 
 bool Application::Update()
 {
-	if (SvcWindow::WindowShouldClose())
+	if (SvcWindow::GetInstance()->WindowShouldClose())
 		return false;
 
 	if (!SvcTime::Update())

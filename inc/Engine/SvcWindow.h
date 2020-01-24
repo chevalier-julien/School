@@ -3,6 +3,7 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
+
 class SvcWindow
 {
 public:
@@ -10,13 +11,17 @@ public:
 	static void Destroy();
 	static bool Update();
 
-	static void GetWindowSize(int& width, int& height);
-	static void GetFramebufferSize(int& width, int& height);
+	static SvcWindow* GetInstance();
 
-	static void WaitEvents();
-	static bool WindowShouldClose();
+	void GetWindowSize(int& width, int& height);
+	void GetFramebufferSize(int& width, int& height);
 
-	static VkResult CreateVulkanWindowSurface(VkInstance instance, VkAllocationCallbacks* allocator, VkSurfaceKHR* surface);
+	void WaitEvents();
+	bool WindowShouldClose();
+
+	VkResult CreateVulkanWindowSurface(VkInstance instance, VkAllocationCallbacks* allocator, VkSurfaceKHR* surface);
+
+	void SetKeyCallback(GLFWkeyfun cb);
 
 private:
 	SvcWindow() {}
