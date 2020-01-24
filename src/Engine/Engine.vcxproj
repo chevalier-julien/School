@@ -73,19 +73,23 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(ProjectDir)..\..\lib\</OutDir>
     <TargetName>$(ProjectName)_d</TargetName>
+    <IntDir>bin\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(ProjectDir)..\..\lib\</OutDir>
     <TargetName>$(ProjectName)_d</TargetName>
+    <IntDir>bin\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)..\..\lib\</OutDir>
+    <IntDir>bin\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)..\..\lib\</OutDir>
+    <IntDir>bin\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -94,13 +98,14 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\ext\inc;$(ProjectDir)..\..\inc;$(ProjectDir)..\..\inc\$(ProjectName)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>libxml2.lib</AdditionalDependencies>
+      <AdditionalDependencies>libxml2.lib;glfw3.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(ProjectDir)..\..\lib; $(ProjectDir)..\..\ext\lib</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -111,13 +116,14 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\ext\inc;$(ProjectDir)..\..\inc;$(ProjectDir)..\..\inc\$(ProjectName)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>libxml2.lib</AdditionalDependencies>
+      <AdditionalDependencies>libxml2.lib;glfw3.lib</AdditionalDependencies>
     </Lib>
     <Lib>
       <AdditionalLibraryDirectories>$(ProjectDir)..\..\lib; $(ProjectDir)..\..\ext\lib</AdditionalLibraryDirectories>
@@ -132,6 +138,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\ext\inc;$(ProjectDir)..\..\inc;$(ProjectDir)..\..\inc\$(ProjectName)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -140,7 +147,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>libxml2.lib</AdditionalDependencies>
+      <AdditionalDependencies>libxml2.lib;glfw3.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(ProjectDir)..\..\lib; $(ProjectDir)..\..\ext\lib</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -153,6 +160,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\ext\inc;$(ProjectDir)..\..\inc;$(ProjectDir)..\..\inc\$(ProjectName)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -161,7 +169,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>libxml2.lib</AdditionalDependencies>
+      <AdditionalDependencies>libxml2.lib;glfw3.lib</AdditionalDependencies>
     </Lib>
     <Lib>
       <AdditionalLibraryDirectories>$(ProjectDir)..\..\lib; $(ProjectDir)..\..\ext\lib</AdditionalLibraryDirectories>
@@ -170,12 +178,23 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="ConfigManager.cpp" />
+    <ClCompile Include="SvcLog.cpp" />
+    <ClCompile Include="SvcRender.cpp" />
+    <ClCompile Include="SvcTime.cpp" />
+    <ClCompile Include="SvcWindow.cpp" />
+    <ClCompile Include="TileRenderer.cpp" />
     <ClCompile Include="XMLUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\inc\Engine\Application.h" />
     <ClInclude Include="..\..\inc\Engine\ConfigManager.h" />
+    <ClInclude Include="..\..\inc\Engine\IndexBuffer.h" />
+    <ClInclude Include="..\..\inc\Engine\SvcLog.h" />
     <ClInclude Include="..\..\inc\Engine\Serializer.h" />
+    <ClInclude Include="..\..\inc\Engine\SvcRender.h" />
+    <ClInclude Include="..\..\inc\Engine\SvcTime.h" />
+    <ClInclude Include="..\..\inc\Engine\SvcWindow.h" />
+    <ClInclude Include="..\..\inc\Engine\TileRenderer.h" />
     <ClInclude Include="..\..\inc\Engine\Types.h" />
     <ClInclude Include="..\..\inc\Engine\XMLUtils.h" />
   </ItemGroup>

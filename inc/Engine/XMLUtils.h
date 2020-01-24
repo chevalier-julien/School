@@ -24,23 +24,33 @@ void xmlRead(xmlNodePtr node, T& v)
 	v.xmlRead(node);
 }
 
-#define DEFINE_XML_TYPE_NATIVE( T )														\
-template <> inline const char * xmlTypeName< T >() { return #T; }						\
-template <> inline void xmlWrite< T >(const T& v, xmlNodePtr node) {						\
-	char content[16];																	\
+#define DEFINE_XML_TYPE( type, name )													\
+template <> inline const char * xmlTypeName< type >() { return name; }					\
+template <> inline void xmlWrite< type >(const type& v, xmlNodePtr node) {				\
+	char content[128];																	\
 	Serializer::Serialize(v, content, sizeof(content));									\
 	xmlNodeSetContent(node, reinterpret_cast<const xmlChar *>(content));					\
 }																						\
-template <> inline void xmlRead< T >(xmlNodePtr node, T& v) {							\
+template <> inline void xmlRead< type >(xmlNodePtr node, type& v) {						\
 	Serializer::Unserialize(reinterpret_cast<const char*>(xmlNodeGetContent(node)), v); \
 }
 
-DEFINE_XML_TYPE_NATIVE(S32)
-DEFINE_XML_TYPE_NATIVE(U32)
-DEFINE_XML_TYPE_NATIVE(U64)
-DEFINE_XML_TYPE_NATIVE(F32)
+DEFINE_XML_TYPE(i32, "i32")
+DEFINE_XML_TYPE(u32, "u32")
+DEFINE_XML_TYPE(u64, "u64")
+DEFINE_XML_TYPE(f32, "f32")
 
-template <> inline const char* xmlTypeName< std::string >() { return "String"; }
+DEFINE_XML_TYPE(glm::vec2, "vec2")
+DEFINE_XML_TYPE(glm::ivec2, "ivec2")
+DEFINE_XML_TYPE(glm::uvec2, "uvec2")
+DEFINE_XML_TYPE(glm::vec3, "vec3")
+DEFINE_XML_TYPE(glm::ivec3, "ivec3")
+DEFINE_XML_TYPE(glm::uvec3, "uvec3")
+DEFINE_XML_TYPE(glm::vec4, "vec4")
+DEFINE_XML_TYPE(glm::ivec4, "ivec4")
+DEFINE_XML_TYPE(glm::uvec4, "uvec4")
+
+template <> inline const char* xmlTypeName< std::string >() { return "string"; }
 template <> inline void xmlWrite< std::string >(const std::string& v, xmlNodePtr node) {
 	xmlNodeSetContent(node, reinterpret_cast<const xmlChar*>(v.c_str()));
 }
@@ -117,7 +127,7 @@ template < typename CType, typename VType >
 xmlClassMember* xmlNewClassVectorMember(const char* id, VType CType::* ptr)
 {
 	xmlClassMemberGeneric< CType, VType >* member = new xmlClassMemberGeneric< CType, VType >;
-	member->m_type = "Vector";
+	member->m_type = "vector";
 	member->m_id = id;
 	member->m_content = ptr;
 	return member;

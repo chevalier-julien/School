@@ -1,12 +1,12 @@
 #pragma once
 
-typedef signed char         S8;
-typedef signed short        S16;
-typedef signed long         S32;
-typedef signed __int64      S64;
-typedef unsigned char       U8;
-typedef unsigned short      U16;
-typedef unsigned long       U32;
-typedef unsigned __int64    U64;
-typedef float               F32;
-typedef double              F64;
+typedef signed char         i8;
+typedef signed short        i16;
+typedef signed long         i32;
+typedef signed __int64      i64;
+typedef unsigned char       u8;
+typedef unsigned short      u16;
+typedef unsigned long       u32;
+typedef unsigned __int64    u64;
+typedef float               f32;
+typedef double              f64;
