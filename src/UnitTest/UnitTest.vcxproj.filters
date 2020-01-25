@@ -29,7 +29,7 @@
     <ClInclude Include="..\..\inc\UnitTest\Test_01.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="Test_02.h">
+    <ClInclude Include="..\..\inc\UnitTest\Test_02.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
   </ItemGroup>

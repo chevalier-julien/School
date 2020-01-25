@@ -172,7 +172,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\inc\UnitTest\Test_01.h" />
-    <ClInclude Include="Test_02.h" />
+    <ClInclude Include="..\..\inc\UnitTest\Test_02.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

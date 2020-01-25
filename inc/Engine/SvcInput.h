@@ -16,7 +16,7 @@ class KeyCallbackHandler : public IKeyCallbackHandler
 {
 public:
 	typedef T* Ptr;
-	typedef (T::*Callback)(int, int, int, int);
+	typedef void (T::*Callback)(int, int, int, int);
 
 public:
 	KeyCallbackHandler(Ptr object, Callback function)
@@ -24,7 +24,7 @@ public:
 
 	void Execute(int key, int scancode, int action, int mods)
 	{
-		m_object->(*m_function)(key, scancode, action, mods);
+		m_object->*m_function(key, scancode, action, mods);
 	}
 
 private:
@@ -45,7 +45,7 @@ public:
 	SvcInput* GetInstance();
 
 	template< typename T >
-	KeyCallbackHandler< T > * RegisterKeyCallback(KeyCallbackHandler< T >::Ptr object, KeyCallbackHandler< T >::Callback function)
+	KeyCallbackHandler< T > * RegisterKeyCallback(typename KeyCallbackHandler< T >::Ptr object, typename KeyCallbackHandler< T >::Callback function)
 	{
 		m_keyCallbackHandlers.push_back(new KeyCallbackHandler< T >(object, function));
 	}

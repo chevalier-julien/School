@@ -1,9 +1,13 @@
 bin/*
 data/*
 doc/*
+ext/inc/libpng/*
+ext/lib/libpng*
+ext/lib/zlib*
 ext/src/*
 lib/*
 src/**/*.vcxproj.user
 src/.vs
 src/**/bin
 src/**/bin
+src/**/log*.txt
