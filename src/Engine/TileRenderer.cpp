@@ -14,8 +14,8 @@ TileRenderer::~TileRenderer()
 
 bool TileRenderer::Init()
 {
-	/*if (!SvcRender::GetInstance()->CreateGraphicsPipeline("tile"))
-		return false;*/
+	if (!SvcRender::GetInstance()->CreateGraphicsPipeline("tile"))
+		return false;
 
 	uint16_t indices[] = {
 		0, 1, 2,
@@ -30,12 +30,14 @@ bool TileRenderer::Init()
 void TileRenderer::Release()
 {
 	SvcRender::GetInstance()->DestroyIndexBuffer(m_indexBuffer);
-	//SvcRender::GetInstance()->DestroyGraphicsPipeline("tile");
+	SvcRender::GetInstance()->DestroyGraphicsPipeline("tile");
 }
 
 void TileRenderer::Draw()
 {
-	//SvcRender::GetInstance()->BindGrapchicsPipeline("tile");
+	SvcRender* svcRender = SvcRender::GetInstance();
 
-
+	svcRender->BindGrapchicsPipeline("tile");
+	svcRender->BindIndexBuffer(m_indexBuffer, 0);
+	svcRender->DrawIndexed(6, 1, 0, 0, 0);
 }

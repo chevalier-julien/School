@@ -2,12 +2,13 @@
 
 #include <vulkan/vulkan.h>
 
+#include "Types.h"
+#include "TileRenderer.h"
+
 #include <vector>
 #include <optional>
 #include <map>
 #include <string>
-
-#include "TileRenderer.h"
 
 struct IndexBuffer
 {
@@ -54,10 +55,14 @@ public:
 
 	IndexBuffer* CreateIndexBuffer(void* data, size_t size);
 	void DestroyIndexBuffer(IndexBuffer* buffer);
+	void BindIndexBuffer(IndexBuffer* buffer, size_t offset);
 
 	bool CreateGraphicsPipeline(const char* shaderName);
 	void DestroyGraphicsPipeline(const char* shaderName);
 	void BindGrapchicsPipeline(const char* shaderName);
+
+	void Draw(u32 vertexCount, u32 instanceCount, u32 firstVertex, u32 fistInstance);
+	void DrawIndexed(u32 indexCount, u32 instanceCount, u32 firstIndex, i32 vertexOffset, u32 firstInstance);
 
 private:
 	SvcRender() {}

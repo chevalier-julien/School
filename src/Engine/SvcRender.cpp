@@ -52,16 +52,15 @@ SvcRender* SvcRender::GetInstance()
 	return ms_instance;
 }
 
-IndexBuffer* SvcRender::CreateIndexBuffer(void* data, size_t size)
+IndexBuffer* SvcRender::CreateIndexBuffer(void* buffer, size_t bufferSize)
 {
-	VkDeviceSize bufferSize = size;// sizeof(indices[0])* indices.size();
-
 	VkBuffer stagingBuffer;
 	VkDeviceMemory stagingBufferMemory;
 	createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
 
+	void* data;
 	vkMapMemory(m_device, stagingBufferMemory, 0, bufferSize, 0, &data);
-	memcpy(data, data, (size_t)size);
+	memcpy(data, buffer, bufferSize);
 	vkUnmapMemory(m_device, stagingBufferMemory);
 
 	VkBuffer indexBuffer;
@@ -82,6 +81,11 @@ IndexBuffer* SvcRender::CreateIndexBuffer(void* data, size_t size)
 	ib->indexBufferMemory = indexBufferMemory;
 
 	return ib;
+}
+
+void SvcRender::BindIndexBuffer(IndexBuffer* buffer, size_t offset)
+{
+	vkCmdBindIndexBuffer(m_commandBuffers[m_commandBufferIndex], buffer->handle, offset, VK_INDEX_TYPE_UINT16);
 }
 
 void SvcRender::DestroyIndexBuffer(IndexBuffer* buffer)
@@ -268,6 +272,16 @@ void SvcRender::BindGrapchicsPipeline(const char* shaderName)
 	}
 }
 
+void SvcRender::Draw(u32 vertexCount, u32 instanceCount, u32 firstVertex, u32 firstInstance)
+{
+	vkCmdDraw(m_commandBuffers[m_commandBufferIndex], vertexCount, instanceCount, firstVertex, firstInstance);
+}
+
+void SvcRender::DrawIndexed(u32 indexCount, u32 instanceCount, u32 firstIndex, i32 vertexOffset, u32 firstInstance)
+{
+	vkCmdDrawIndexed(m_commandBuffers[m_commandBufferIndex], indexCount, instanceCount, firstIndex, vertexOffset, firstInstance);
+}
+
 bool SvcRender::Init()
 {
 	m_validationLayers.push_back("VK_LAYER_KHRONOS_validation");
@@ -300,9 +314,6 @@ bool SvcRender::Init()
 		return false;
 
 	if (!createRenderPass())
-		return false;
-
-	if (!CreateGraphicsPipeline("shader"))
 		return false;
 
 	if (!createFramebuffers())
@@ -354,8 +365,6 @@ void SvcRender::Release()
 		vkDestroyFramebuffer(m_device, framebuffer, nullptr);
 	}
 	m_swapChainFramebuffers.clear();
-
-	DestroyGraphicsPipeline("shader");
 
 	vkDestroyRenderPass(m_device, m_renderPass, nullptr);
 	m_renderPass = nullptr;
@@ -759,45 +768,6 @@ bool SvcRender::createCommandBuffers()
 
 	m_commandBufferIndex = 0;
 
-	/*for (size_t i = 0; i < m_commandBuffers.size(); i++)
-	{
-		VkCommandBufferBeginInfo beginInfo = {};
-		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-
-		if (vkBeginCommandBuffer(m_commandBuffers[i], &beginInfo) != VK_SUCCESS)
-		{
-			SvcLog::Printf(SvcLog::ELevel_Error, "failed to begin recording command buffer %llu!", i);
-			return false;
-		}
-
-		VkRenderPassBeginInfo renderPassInfo = {};
-		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-		renderPassInfo.renderPass = m_renderPass;
-		renderPassInfo.framebuffer = m_swapChainFramebuffers[i];
-		renderPassInfo.renderArea.offset = { 0, 0 };
-		renderPassInfo.renderArea.extent = m_swapChainExtent;
-
-		VkClearValue clearColor = { 0.0f, 0.0f, 0.0f, 1.0f };
-		renderPassInfo.clearValueCount = 1;
-		renderPassInfo.pClearValues = &clearColor;
-
-		vkCmdBeginRenderPass(m_commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-		BindGrapchicsPipeline("shader", m_commandBuffers[i]);
-
-		vkCmdDraw(m_commandBuffers[i], 3, 1, 0, 0);
-
-		m_tileRenderer.Draw();
-
-		vkCmdEndRenderPass(m_commandBuffers[i]);
-
-		if (vkEndCommandBuffer(m_commandBuffers[i]) != VK_SUCCESS)
-		{
-			SvcLog::Printf(SvcLog::ELevel_Error, "failed to record command buffer %llu!", i);
-			return false;
-		}
-	}*/
-
 	return true;
 }
 
@@ -876,12 +846,6 @@ bool SvcRender::drawFrame()
 		VkClearValue clearColor = { 0.0f, 0.0f, 0.0f, 1.0f };
 		renderPassInfo.clearValueCount = 1;
 		renderPassInfo.pClearValues = &clearColor;
-
-		vkCmdBeginRenderPass(m_commandBuffers[m_commandBufferIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-		BindGrapchicsPipeline("shader");
-
-		vkCmdDraw(m_commandBuffers[m_commandBufferIndex], 3, 1, 0, 0);
 
 		m_tileRenderer.Draw();
 
@@ -987,8 +951,6 @@ void SvcRender::cleanupSwapChain()
 	}
 	m_swapChainFramebuffers.clear();
 
-	DestroyGraphicsPipeline("shader");
-
 	vkDestroyRenderPass(m_device, m_renderPass, nullptr);
 	m_renderPass = nullptr;
 
@@ -1025,9 +987,6 @@ bool SvcRender::recreateSwapChain()
 		return false;
 
 	if (!createRenderPass())
-		return false;
-
-	if (!CreateGraphicsPipeline("shader"))
 		return false;
 
 	if (!createFramebuffers())
