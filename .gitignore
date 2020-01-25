@@ -1,8 +1,7 @@
 bin/*
-data/*
 doc/*
-data/shader/*.vso
-data/shader/*.fso
+data/shaders/*.vso
+data/shaders/*.fso
 ext/inc/libpng/*
 ext/lib/libpng*
 ext/lib/zlib*
