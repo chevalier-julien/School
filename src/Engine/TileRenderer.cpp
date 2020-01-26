@@ -3,7 +3,8 @@
 #include "SvcRender.h"
 
 TileRenderer::TileRenderer()
-	: m_indexBuffer(nullptr)
+	: m_pipeline(nullptr)
+	, m_indexBuffer(nullptr)
 {
 	
 }
@@ -12,9 +13,9 @@ TileRenderer::~TileRenderer()
 {
 }
 
-bool TileRenderer::Init()
+bool TileRenderer::Init(RenderDevice::RenderPass renderPass, size_t width, size_t height)
 {
-	if (!SvcRender::GetInstance()->CreateGraphicsPipeline("tile"))
+	if (!RenderDevice::GetInstance()->CreateGraphicsPipeline("tile", renderPass, width, height, &m_pipeline))
 		return false;
 
 	uint16_t indices[] = {
@@ -22,22 +23,28 @@ bool TileRenderer::Init()
 		2, 1, 3
 	};
 
-	m_indexBuffer = SvcRender::GetInstance()->CreateIndexBuffer(indices, sizeof(indices));
+	if (!RenderDevice::GetInstance()->CreateIndexBuffer(indices, sizeof(indices), &m_indexBuffer))
+		return false;
 
 	return true;
 }
 
 void TileRenderer::Release()
 {
-	SvcRender::GetInstance()->DestroyIndexBuffer(m_indexBuffer);
-	SvcRender::GetInstance()->DestroyGraphicsPipeline("tile");
+	RenderDevice::GetInstance()->DestroyIndexBuffer(m_indexBuffer);
+	RenderDevice::GetInstance()->DestroyGraphicsPipeline(m_pipeline);
 }
 
-void TileRenderer::Draw()
+void TileRenderer::Prepare()
 {
-	SvcRender* svcRender = SvcRender::GetInstance();
 
-	svcRender->BindGrapchicsPipeline("tile");
-	svcRender->BindIndexBuffer(m_indexBuffer, 0);
-	svcRender->DrawIndexed(6, 1, 0, 0, 0);
+}
+
+void TileRenderer::Render(RenderDevice::CommandBuffer commandBuffer)
+{
+	RenderDevice* renderDevice = RenderDevice::GetInstance();
+
+	renderDevice->BindGrapchicsPipeline(commandBuffer, m_pipeline);
+	renderDevice->BindIndexBuffer(commandBuffer, m_indexBuffer, 0);
+	renderDevice->DrawIndexed(commandBuffer, 6, 1, 0, 0, 0);
 }

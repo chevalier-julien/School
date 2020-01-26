@@ -178,6 +178,7 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="ConfigManager.cpp" />
+    <ClCompile Include="RenderDevice.cpp" />
     <ClCompile Include="SvcInput.cpp" />
     <ClCompile Include="SvcLog.cpp" />
     <ClCompile Include="SvcRender.cpp" />
@@ -189,6 +190,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\inc\Engine\Application.h" />
     <ClInclude Include="..\..\inc\Engine\ConfigManager.h" />
+    <ClInclude Include="..\..\inc\Engine\RenderDevice.h" />
     <ClInclude Include="..\..\inc\Engine\IndexBuffer.h" />
     <ClInclude Include="..\..\inc\Engine\SvcInput.h" />
     <ClInclude Include="..\..\inc\Engine\SvcLog.h" />

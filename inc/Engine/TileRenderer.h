@@ -1,6 +1,6 @@
 #pragma once
 
-struct IndexBuffer;
+#include "RenderDevice.h"
 
 class TileRenderer
 {
@@ -8,10 +8,12 @@ public:
 	TileRenderer();
 	~TileRenderer();
 
-	bool Init();
+	bool Init(RenderDevice::RenderPass renderPass, size_t width, size_t height);
 	void Release();
-	void Draw();
+	void Prepare();
+	void Render(RenderDevice::CommandBuffer commandBuffer);
 
 private:
-	IndexBuffer* m_indexBuffer;
+	RenderDevice::Pipeline m_pipeline;
+	RenderDevice::Buffer m_indexBuffer;
 };
