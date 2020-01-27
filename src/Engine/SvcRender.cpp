@@ -65,6 +65,9 @@ bool SvcRender::Init()
 	if (!createCommandBuffers())
 		return false;
 
+	if (!createGlobalParameters())
+		return false;
+
 	if (!createSynchObjects())
 		return false;
 
@@ -90,6 +93,12 @@ void SvcRender::Release()
 	m_inFlightFences.clear();
 	m_renderFinishedSemaphores.clear();
 	m_imageAvailableSemaphores.clear();
+
+	for (RenderDevice::Buffer gParams : m_globalParameters)
+	{
+		m_renderDevice->DestroyBuffer(gParams);
+	}
+	m_globalParameters.clear();
 
 	if (!m_commandBuffers.empty())
 	{
@@ -142,29 +151,6 @@ bool SvcRender::createRenderPass()
 	return m_renderDevice->CreateRenderPass(m_swapchain->format, &m_renderPass);
 }
 
-/*bool SvcRender::createDescriptorSetLayout()
-{
-	VkDescriptorSetLayoutBinding uboLayoutBinding = {};
-	uboLayoutBinding.binding = 0;
-	uboLayoutBinding.descriptorCount = 1;
-	uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	uboLayoutBinding.pImmutableSamplers = nullptr;
-	uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-
-	VkDescriptorSetLayoutCreateInfo layoutInfo = {};
-	layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-	layoutInfo.bindingCount = 1;
-	layoutInfo.pBindings = &uboLayoutBinding;
-
-	if (vkCreateDescriptorSetLayout(m_device, &layoutInfo, nullptr, &m_descriptorSetLayout) != VK_SUCCESS)
-	{
-		SvcLog::Printf(SvcLog::ELevel_Error, "failed to create descriptor set layout!");
-		return false;
-	}
-
-	return true;
-}*/
-
 bool SvcRender::createFramebuffers()
 {
 	m_swapchainFramebuffers.resize(m_swapchainImageViews.size());
@@ -183,6 +169,20 @@ bool SvcRender::createCommandBuffers()
 	m_commandBuffers.resize(m_swapchainFramebuffers.size());
 	if (!m_renderDevice->AllocateCommandBuffers(m_commandBuffers.size(), m_commandBuffers.data()))
 		return false;
+
+	return true;
+}
+
+bool SvcRender::createGlobalParameters()
+{
+	const size_t bufferSize = sizeof(GlobalParameters);
+
+	m_globalParameters.resize(m_swapchain->images.size());
+	for (size_t i = 0; i < m_swapchain->images.size(); ++i)
+	{
+		if (!m_renderDevice->CreateUniformBuffer(bufferSize,&m_globalParameters[i]))
+			return false;
+	}
 
 	return true;
 }
@@ -211,6 +211,12 @@ bool SvcRender::createSynchObjects()
 
 void SvcRender::cleanupSwapChain()
 {
+	for (RenderDevice::Buffer gParams : m_globalParameters)
+	{
+		m_renderDevice->DestroyBuffer(gParams);
+	}
+	m_globalParameters.clear();
+
 	if (!m_commandBuffers.empty())
 	{
 		m_renderDevice->FreeCommandBuffers(m_commandBuffers.size(), m_commandBuffers.data());
@@ -265,6 +271,30 @@ bool SvcRender::recreateSwapChain()
 	if (!createCommandBuffers())
 		return false;
 
+	if (!createGlobalParameters())
+		return false;
+
+	return true;
+}
+
+bool SvcRender::updateGlobalParameters()
+{
+	RenderDevice::Buffer currentGlobalParameters = m_globalParameters[m_imageIndex];
+
+	float width = static_cast<float>(m_swapchain->extent.width);
+	float height = static_cast<float>(m_swapchain->extent.height);
+
+	GlobalParameters gParams;
+	gParams.viewportSize = glm::vec4(width, height, 1.0f / width, 1.0f / height);
+
+	void* data;
+	if (!m_renderDevice->MapBuffer(currentGlobalParameters, 0, sizeof(gParams), &data))
+		return false;
+
+	memcpy(data, &gParams, sizeof(gParams));
+
+	m_renderDevice->UnmapBuffer(currentGlobalParameters);
+
 	return true;
 }
 
@@ -290,6 +320,8 @@ bool SvcRender::BeginFrame()
 
 bool SvcRender::Prepare()
 {
+	updateGlobalParameters();
+
 	m_tileRenderer.Prepare();
 
 	/////

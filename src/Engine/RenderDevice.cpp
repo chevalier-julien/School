@@ -45,11 +45,29 @@ RenderDevice* RenderDevice::GetInstance()
 	return ms_instance;
 }
 
+bool RenderDevice::CreateUniformBuffer(size_t bufferSize, Buffer* uniformBuffer)
+{
+	VkBuffer vkUniformBuffer;
+	VkDeviceMemory vkUniformBufferMemory;
+	if (!createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, vkUniformBuffer, vkUniformBufferMemory))
+	{
+		SvcLog::Printf(SvcLog::ELevel_Error, "failed to create uniform buffer!");
+		return false;
+	}
+
+	*uniformBuffer = new Buffer_T;
+	(*uniformBuffer)->handle = vkUniformBuffer;
+	(*uniformBuffer)->bufferMemory = vkUniformBufferMemory;
+
+	return true;
+}
+
 bool RenderDevice::CreateIndexBuffer(void* buffer, size_t bufferSize, Buffer* indexBuffer)
 {
 	VkBuffer stagingBuffer;
 	VkDeviceMemory stagingBufferMemory;
-	createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+	if (! createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory))
+		return false;
 
 	void* data;
 	vkMapMemory(m_device, stagingBufferMemory, 0, bufferSize, 0, &data);
@@ -60,7 +78,8 @@ bool RenderDevice::CreateIndexBuffer(void* buffer, size_t bufferSize, Buffer* in
 	VkDeviceMemory vkIndexBufferMemory;
 	if (!createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vkIndexBuffer, vkIndexBufferMemory))
 	{
-		SvcLog::Printf(SvcLog::ELevel_Error, "failed to create index buffer!");
+		vkDestroyBuffer(m_device, stagingBuffer, nullptr);
+		vkFreeMemory(m_device, stagingBufferMemory, nullptr); 
 		return false;
 	}
 
@@ -71,24 +90,34 @@ bool RenderDevice::CreateIndexBuffer(void* buffer, size_t bufferSize, Buffer* in
 
 	*indexBuffer = new Buffer_T;
 	(*indexBuffer)->handle = vkIndexBuffer;
-	(*indexBuffer)->indexBufferMemory = vkIndexBufferMemory;
+	(*indexBuffer)->bufferMemory = vkIndexBufferMemory;
 
 	return true;
-}
-
-void RenderDevice::DestroyIndexBuffer(Buffer buffer)
-{
-	if (buffer)
-	{
-		vkDestroyBuffer(m_device, buffer->handle, nullptr);
-		vkFreeMemory(m_device, buffer->indexBufferMemory, nullptr);
-		delete buffer;
-	}
 }
 
 void RenderDevice::BindIndexBuffer(CommandBuffer commandBuffer, Buffer buffer, size_t offset)
 {
 	vkCmdBindIndexBuffer(commandBuffer, buffer->handle, offset, VK_INDEX_TYPE_UINT16);
+}
+
+RenderDevice::Result RenderDevice::MapBuffer(Buffer buffer, size_t offset, size_t size, void** data)
+{
+	return vkMapMemory(m_device, buffer->bufferMemory, offset, size, 0, data);
+}
+
+void RenderDevice::UnmapBuffer(Buffer buffer)
+{
+	vkUnmapMemory(m_device, buffer->bufferMemory);
+}
+
+void RenderDevice::DestroyBuffer(Buffer buffer)
+{
+	if (buffer)
+	{
+		vkDestroyBuffer(m_device, buffer->handle, nullptr);
+		vkFreeMemory(m_device, buffer->bufferMemory, nullptr);
+		delete buffer;
+	}
 }
 
 bool RenderDevice::CreateImageView(Image& image, Format format, ImageView* imageView)
@@ -340,7 +369,7 @@ void RenderDevice::DestroyFramebuffer(Framebuffer framebuffer)
 	vkDestroyFramebuffer(m_device, framebuffer, nullptr);
 }
 
-bool RenderDevice::CreateGraphicsPipeline(const char* shaderName, RenderPass renderPass, size_t width, size_t height, Pipeline* pipeline)
+bool RenderDevice::CreateGraphicsPipeline(const char* shaderName, RenderPass renderPass, size_t width, size_t height, size_t setLayoutCount, DescriptorSetLayout* setLayouts, Pipeline* pipeline)
 {
 	std::string shaderFileName = "../../data/shaders/";
 	shaderFileName += shaderName;
@@ -447,7 +476,8 @@ bool RenderDevice::CreateGraphicsPipeline(const char* shaderName, RenderPass ren
 
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
 	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-	pipelineLayoutInfo.setLayoutCount = 0;
+	pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(setLayoutCount);
+	pipelineLayoutInfo.pSetLayouts = setLayouts;
 	pipelineLayoutInfo.pushConstantRangeCount = 0;
 
 	VkPipelineLayout pipelineLayout;
@@ -501,6 +531,34 @@ void RenderDevice::DestroyGraphicsPipeline(Pipeline pipeline)
 void RenderDevice::BindGrapchicsPipeline(CommandBuffer commandBuffer, Pipeline pipeline)
 {
 	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->handle);
+}
+
+bool RenderDevice::CreateDescriptorSetLayout(DescriptorType type, ShaderStageFlags stageFlags, DescriptorSetLayout* descriptorSetLayout)
+{
+	VkDescriptorSetLayoutBinding uboLayoutBinding = {};
+	uboLayoutBinding.binding = 0;
+	uboLayoutBinding.descriptorType = type;
+	uboLayoutBinding.descriptorCount = 1;
+	uboLayoutBinding.stageFlags = stageFlags;
+	uboLayoutBinding.pImmutableSamplers = nullptr;
+
+	VkDescriptorSetLayoutCreateInfo layoutInfo = {};
+	layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+	layoutInfo.bindingCount = 1;
+	layoutInfo.pBindings = &uboLayoutBinding;
+
+	if (vkCreateDescriptorSetLayout(m_device, &layoutInfo, nullptr, descriptorSetLayout) != VK_SUCCESS)
+	{
+		SvcLog::Printf(SvcLog::ELevel_Error, "failed to create descriptor set layout!");
+		return false;
+	}
+
+	return true;
+}
+
+void RenderDevice::DestroyDescriptorSetLayout(DescriptorSetLayout descriptorSetLayout)
+{
+	vkDestroyDescriptorSetLayout(m_device, descriptorSetLayout, nullptr);
 }
 
 bool RenderDevice::AllocateCommandBuffers(size_t count, CommandBuffer* commandBuffers)
@@ -1092,6 +1150,8 @@ bool RenderDevice::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkM
 
 	if (vkAllocateMemory(m_device, &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS)
 	{
+		vkDestroyBuffer(m_device, buffer, nullptr);
+
 		SvcLog::Printf(SvcLog::ELevel_Error, "failed to allocate buffer memory!");
 		return false;
 	}

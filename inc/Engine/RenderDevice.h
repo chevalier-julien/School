@@ -16,11 +16,13 @@ public:
 	typedef VkFormat Format;
 	typedef VkImage Image;
 	typedef VkImageView ImageView;
+	typedef VkDescriptorType DescriptorType;
+	typedef VkShaderStageFlags ShaderStageFlags;
 
 	struct Buffer_T
 	{
 		VkBuffer			handle;
-		VkDeviceMemory	indexBufferMemory;
+		VkDeviceMemory	bufferMemory;
 	};
 	typedef Buffer_T* Buffer;
 
@@ -42,6 +44,8 @@ public:
 		VkPipelineLayout		layout;
 	};
 	typedef Pipeline_T* Pipeline;
+
+	typedef VkDescriptorSetLayout DescriptorSetLayout;
 
 	typedef VkCommandBuffer CommandBuffer;
 	typedef VkSemaphore Semaphore;
@@ -72,9 +76,13 @@ public:
 
 	static RenderDevice* GetInstance();
 
+	bool CreateUniformBuffer(size_t bufferSize, Buffer* uniformBuffer);
 	bool CreateIndexBuffer(void* data, size_t size, Buffer* indexBuffer);
-	void DestroyIndexBuffer(Buffer buffer);
 	void BindIndexBuffer(CommandBuffer commandBuffer, Buffer buffer, size_t offset);
+
+	Result MapBuffer(Buffer buffer, size_t offset, size_t size, void** data);
+	void UnmapBuffer(Buffer buffer);
+	void DestroyBuffer(Buffer buffer);
 
 	bool CreateImageView(Image& image, Format format, ImageView* imageView);
 	void DestroyImageView(ImageView imageView);
@@ -93,9 +101,12 @@ public:
 	bool CreateFramebuffer(ImageView imageView, RenderPass renderPass, uint32_t width, uint32_t height, Framebuffer* framebuffer);
 	void DestroyFramebuffer(Framebuffer framebuffer);
 
-	bool CreateGraphicsPipeline(const char* shaderName, RenderPass renderPass, size_t width, size_t height, Pipeline* pipeline);
+	bool CreateGraphicsPipeline(const char* shaderName, RenderPass renderPass, size_t width, size_t height, size_t setLayoutCount, DescriptorSetLayout* setLayouts, Pipeline* pipeline);
 	void DestroyGraphicsPipeline(Pipeline pipeline);
 	void BindGrapchicsPipeline(CommandBuffer commandBuffer, Pipeline pipeline);
+
+	bool CreateDescriptorSetLayout(DescriptorType type, ShaderStageFlags stageFlags, DescriptorSetLayout* descriptorSetLayout);
+	void DestroyDescriptorSetLayout(DescriptorSetLayout descriptorSetLayout);
 
 	bool AllocateCommandBuffers(size_t count, CommandBuffer* commandBuffers);
 	void FreeCommandBuffers(size_t count, CommandBuffer* commandBuffers);

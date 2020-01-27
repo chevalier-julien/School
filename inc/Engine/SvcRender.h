@@ -3,8 +3,16 @@
 #include "RenderDevice.h"
 #include "TileRenderer.h"
 
+#include "glm/vec4.hpp"
+
 class SvcRender
 {
+public:
+	struct GlobalParameters
+	{
+		glm::vec4	viewportSize;
+	};
+
 public:
 	static bool Create();
 	static void Destroy();
@@ -22,13 +30,15 @@ private:
 	bool createSwapChain();
 	bool createImageViews();
 	bool createRenderPass();
-	//bool createDescriptorSetLayout();
 	bool createFramebuffers();
 	bool createCommandBuffers();
+	bool createGlobalParameters();
 	bool createSynchObjects();
 
 	void cleanupSwapChain();
 	bool recreateSwapChain();
+
+	bool updateGlobalParameters();
 
 	bool BeginFrame();
 	bool Prepare();
@@ -55,6 +65,8 @@ private:
 	size_t m_maxFramesInFlight;
 	size_t m_currentFrame;
 	uint32_t m_imageIndex;
+
+	std::vector<RenderDevice::Buffer> m_globalParameters;
 
 	TileRenderer m_tileRenderer;
 };

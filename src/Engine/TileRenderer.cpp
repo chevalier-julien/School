@@ -3,7 +3,8 @@
 #include "SvcRender.h"
 
 TileRenderer::TileRenderer()
-	: m_pipeline(nullptr)
+	: m_descriptorSetLayout(nullptr)
+	, m_pipeline(nullptr)
 	, m_indexBuffer(nullptr)
 {
 	
@@ -15,7 +16,15 @@ TileRenderer::~TileRenderer()
 
 bool TileRenderer::Init(RenderDevice::RenderPass renderPass, size_t width, size_t height)
 {
-	if (!RenderDevice::GetInstance()->CreateGraphicsPipeline("tile", renderPass, width, height, &m_pipeline))
+	RenderDevice* renderDevice = RenderDevice::GetInstance();
+
+	if (!renderDevice->CreateDescriptorSetLayout(
+		VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+		VK_SHADER_STAGE_VERTEX_BIT,
+		&m_descriptorSetLayout))
+		return false;
+
+	if (!renderDevice->CreateGraphicsPipeline("tile", renderPass, width, height, 1, &m_descriptorSetLayout, &m_pipeline))
 		return false;
 
 	uint16_t indices[] = {
@@ -23,7 +32,7 @@ bool TileRenderer::Init(RenderDevice::RenderPass renderPass, size_t width, size_
 		2, 1, 3
 	};
 
-	if (!RenderDevice::GetInstance()->CreateIndexBuffer(indices, sizeof(indices), &m_indexBuffer))
+	if (!renderDevice->CreateIndexBuffer(indices, sizeof(indices), &m_indexBuffer))
 		return false;
 
 	return true;
@@ -31,7 +40,7 @@ bool TileRenderer::Init(RenderDevice::RenderPass renderPass, size_t width, size_
 
 void TileRenderer::Release()
 {
-	RenderDevice::GetInstance()->DestroyIndexBuffer(m_indexBuffer);
+	RenderDevice::GetInstance()->DestroyBuffer(m_indexBuffer);
 	RenderDevice::GetInstance()->DestroyGraphicsPipeline(m_pipeline);
 }
 

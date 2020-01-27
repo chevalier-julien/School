@@ -14,6 +14,7 @@ public:
 	void Render(RenderDevice::CommandBuffer commandBuffer);
 
 private:
+	RenderDevice::DescriptorSetLayout m_descriptorSetLayout;
 	RenderDevice::Pipeline m_pipeline;
 	RenderDevice::Buffer m_indexBuffer;
 };
