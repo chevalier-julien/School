@@ -533,11 +533,11 @@ void RenderDevice::BindGrapchicsPipeline(CommandBuffer commandBuffer, Pipeline p
 	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->handle);
 }
 
-bool RenderDevice::CreateDescriptorSetLayout(DescriptorType type, ShaderStageFlags stageFlags, DescriptorSetLayout* descriptorSetLayout)
+bool RenderDevice::CreateDescriptorSetLayout(DescriptorType descriptorType, ShaderStageFlags stageFlags, DescriptorSetLayout* descriptorSetLayout)
 {
 	VkDescriptorSetLayoutBinding uboLayoutBinding = {};
 	uboLayoutBinding.binding = 0;
-	uboLayoutBinding.descriptorType = type;
+	uboLayoutBinding.descriptorType = descriptorType;
 	uboLayoutBinding.descriptorCount = 1;
 	uboLayoutBinding.stageFlags = stageFlags;
 	uboLayoutBinding.pImmutableSamplers = nullptr;
@@ -559,6 +559,77 @@ bool RenderDevice::CreateDescriptorSetLayout(DescriptorType type, ShaderStageFla
 void RenderDevice::DestroyDescriptorSetLayout(DescriptorSetLayout descriptorSetLayout)
 {
 	vkDestroyDescriptorSetLayout(m_device, descriptorSetLayout, nullptr);
+}
+
+bool RenderDevice::CreateDescriptorPool(DescriptorType type, size_t descriptorCount, DescriptorPool* descriptorPool)
+{
+	VkDescriptorPoolSize poolSize = {};
+	poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+	poolSize.descriptorCount = static_cast<uint32_t>(descriptorCount);
+
+	VkDescriptorPoolCreateInfo poolInfo = {};
+	poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+	poolInfo.poolSizeCount = 1;
+	poolInfo.pPoolSizes = &poolSize;
+	poolInfo.maxSets = static_cast<uint32_t>(descriptorCount);
+
+	if (vkCreateDescriptorPool(m_device, &poolInfo, nullptr, descriptorPool) != VK_SUCCESS)
+	{
+		SvcLog::Printf(SvcLog::ELevel_Error, "failed to create descriptor pool!");
+		return false;
+	}
+
+	return true;
+}
+
+void RenderDevice::DestroyDescriptorPool(DescriptorPool descriptorPool)
+{
+	vkDestroyDescriptorPool(m_device, descriptorPool, nullptr);
+}
+
+bool RenderDevice::AllocateDescriptorSets(DescriptorPool descriptorPool, size_t descriptorSetCount, DescriptorSetLayout* layouts, DescriptorSet* descriptorSets)
+{
+	VkDescriptorSetAllocateInfo allocInfo = {};
+	allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+	allocInfo.descriptorPool = descriptorPool;
+	allocInfo.descriptorSetCount = static_cast<uint32_t>(descriptorSetCount);
+	allocInfo.pSetLayouts = layouts;
+
+	if (vkAllocateDescriptorSets(m_device, &allocInfo, descriptorSets) != VK_SUCCESS)
+	{
+		SvcLog::Printf(SvcLog::ELevel_Error, "failed to allocate descriptor sets!");
+		return false;
+	}
+
+	return true;
+}
+void RenderDevice::FreeDescriptorSets(DescriptorPool descriptorPool, size_t descriptorSetCount, DescriptorSet* descriptorSets)
+{
+	vkFreeDescriptorSets(m_device, descriptorPool, static_cast<uint32_t>(descriptorSetCount), descriptorSets);
+}
+
+void RenderDevice::UpdateDescriptorSet(DescriptorSet descriptorSet, DescriptorType type, Buffer buffer, size_t offset, size_t range)
+{
+	VkDescriptorBufferInfo bufferInfo = {};
+	bufferInfo.buffer = buffer->handle;
+	bufferInfo.offset = offset;
+	bufferInfo.range = range;
+
+	VkWriteDescriptorSet descriptorWrite = {};
+	descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+	descriptorWrite.dstSet = descriptorSet;
+	descriptorWrite.dstBinding = 0;
+	descriptorWrite.dstArrayElement = 0;
+	descriptorWrite.descriptorType = type;
+	descriptorWrite.descriptorCount = 1;
+	descriptorWrite.pBufferInfo = &bufferInfo;
+
+	vkUpdateDescriptorSets(m_device, 1, &descriptorWrite, 0, nullptr);
+}
+
+void RenderDevice::BindDescriptorSets(CommandBuffer commandBuffer, Pipeline pipeline, size_t firstSet, size_t descriptorSetCount, DescriptorSet* descriptorSets)
+{
+	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->layout, static_cast<uint32_t>(firstSet), static_cast<uint32_t>(descriptorSetCount), descriptorSets, 0, nullptr);
 }
 
 bool RenderDevice::AllocateCommandBuffers(size_t count, CommandBuffer* commandBuffers)

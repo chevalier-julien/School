@@ -35,6 +35,8 @@ SvcRender::SvcRender()
 	: m_renderDevice(nullptr)
 	, m_swapchain(nullptr)
 	, m_renderPass(nullptr)
+	, m_globalDescriptorSetLayout(nullptr)
+	, m_globalDescriptorPool(nullptr)
 	, m_maxFramesInFlight(0)
 	, m_currentFrame(0)
 	, m_imageIndex(0)
@@ -68,10 +70,19 @@ bool SvcRender::Init()
 	if (!createGlobalParameters())
 		return false;
 
+	if (!createGlobalDescriptorSetLayout())
+		return false;
+
+	if (!createGlobalDescriptorPool())
+		return false;
+
+	if (!createGlobalDescriptorSets())
+		return false;
+
 	if (!createSynchObjects())
 		return false;
 
-	if (!m_tileRenderer.Init(m_renderPass, m_swapchain->extent.width, m_swapchain->extent.height))
+	if (!m_tileRenderer.Init(m_renderPass, m_swapchain->extent.width, m_swapchain->extent.height, m_globalDescriptorSetLayout))
 		return false;
 
 	return true;
@@ -93,6 +104,14 @@ void SvcRender::Release()
 	m_inFlightFences.clear();
 	m_renderFinishedSemaphores.clear();
 	m_imageAvailableSemaphores.clear();
+
+	m_globalDescriptorSets.clear();
+
+	m_renderDevice->DestroyDescriptorPool(m_globalDescriptorPool);
+	m_globalDescriptorPool = nullptr;
+
+	m_renderDevice->DestroyDescriptorSetLayout(m_globalDescriptorSetLayout);
+	m_globalDescriptorSetLayout = nullptr;
 
 	for (RenderDevice::Buffer gParams : m_globalParameters)
 	{
@@ -135,7 +154,7 @@ bool SvcRender::createSwapChain()
 
 bool SvcRender::createImageViews()
 {
-	m_swapchainImageViews.resize(m_swapchain->images.size());
+	m_swapchainImageViews.resize(m_swapchain->images.size(), nullptr);
 
 	for (size_t i = 0; i < m_swapchain->images.size(); ++i)
 	{
@@ -153,7 +172,7 @@ bool SvcRender::createRenderPass()
 
 bool SvcRender::createFramebuffers()
 {
-	m_swapchainFramebuffers.resize(m_swapchainImageViews.size());
+	m_swapchainFramebuffers.resize(m_swapchainImageViews.size(), nullptr);
 
 	for (size_t i = 0; i < m_swapchainImageViews.size(); ++i)
 	{
@@ -166,7 +185,7 @@ bool SvcRender::createFramebuffers()
 
 bool SvcRender::createCommandBuffers()
 {
-	m_commandBuffers.resize(m_swapchainFramebuffers.size());
+	m_commandBuffers.resize(m_swapchainFramebuffers.size(), nullptr);
 	if (!m_renderDevice->AllocateCommandBuffers(m_commandBuffers.size(), m_commandBuffers.data()))
 		return false;
 
@@ -177,11 +196,46 @@ bool SvcRender::createGlobalParameters()
 {
 	const size_t bufferSize = sizeof(GlobalParameters);
 
-	m_globalParameters.resize(m_swapchain->images.size());
+	m_globalParameters.resize(m_swapchain->images.size(), nullptr);
 	for (size_t i = 0; i < m_swapchain->images.size(); ++i)
 	{
 		if (!m_renderDevice->CreateUniformBuffer(bufferSize,&m_globalParameters[i]))
 			return false;
+	}
+
+	return true;
+}
+
+bool SvcRender::createGlobalDescriptorSetLayout()
+{
+	if (!m_renderDevice->CreateDescriptorSetLayout(
+		VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+		VK_SHADER_STAGE_ALL_GRAPHICS,
+		&m_globalDescriptorSetLayout))
+		return false;
+
+	return true;
+}
+
+bool SvcRender::createGlobalDescriptorPool()
+{
+	if (!m_renderDevice->CreateDescriptorPool(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, m_swapchain->images.size(), &m_globalDescriptorPool))
+		return false;
+
+	return true;
+}
+
+bool SvcRender::createGlobalDescriptorSets()
+{
+	std::vector<RenderDevice::DescriptorSetLayout> layouts(m_swapchain->images.size(), m_globalDescriptorSetLayout);
+
+	m_globalDescriptorSets.resize(m_swapchain->images.size(), nullptr);
+	if (!m_renderDevice->AllocateDescriptorSets(m_globalDescriptorPool, m_globalDescriptorSets.size(), layouts.data(), m_globalDescriptorSets.data()))
+		return false;
+
+	for (size_t i = 0; i < m_globalDescriptorSets.size(); ++i)
+	{
+		m_renderDevice->UpdateDescriptorSet(m_globalDescriptorSets[i], VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, m_globalParameters[i], 0, sizeof(GlobalParameters));
 	}
 
 	return true;
@@ -211,6 +265,14 @@ bool SvcRender::createSynchObjects()
 
 void SvcRender::cleanupSwapChain()
 {
+	m_globalDescriptorSets.clear();
+
+	m_renderDevice->DestroyDescriptorPool(m_globalDescriptorPool);
+	m_globalDescriptorPool = nullptr;
+
+	m_renderDevice->DestroyDescriptorSetLayout(m_globalDescriptorSetLayout);
+	m_globalDescriptorSetLayout = nullptr;
+
 	for (RenderDevice::Buffer gParams : m_globalParameters)
 	{
 		m_renderDevice->DestroyBuffer(gParams);
@@ -274,6 +336,15 @@ bool SvcRender::recreateSwapChain()
 	if (!createGlobalParameters())
 		return false;
 
+	if (!createGlobalDescriptorSetLayout())
+		return false;
+
+	if (!createGlobalDescriptorPool())
+		return false;
+
+	if (!createGlobalDescriptorSets())
+		return false;
+
 	return true;
 }
 
@@ -288,7 +359,7 @@ bool SvcRender::updateGlobalParameters()
 	gParams.viewportSize = glm::vec4(width, height, 1.0f / width, 1.0f / height);
 
 	void* data;
-	if (!m_renderDevice->MapBuffer(currentGlobalParameters, 0, sizeof(gParams), &data))
+	if (m_renderDevice->MapBuffer(currentGlobalParameters, 0, sizeof(gParams), &data) != VK_SUCCESS)
 		return false;
 
 	memcpy(data, &gParams, sizeof(gParams));
@@ -347,7 +418,7 @@ bool SvcRender::Render()
 		m_swapchainFramebuffers[m_imageIndex],
 		m_swapchain->extent.width, m_swapchain->extent.height);
 
-	m_tileRenderer.Render(m_commandBuffers[m_imageIndex]);
+	m_tileRenderer.Render(m_commandBuffers[m_imageIndex], m_globalDescriptorSets[m_imageIndex]);
 
 	m_renderDevice->EndRenderPass(m_commandBuffers[m_imageIndex]);
 

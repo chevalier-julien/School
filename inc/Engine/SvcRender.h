@@ -33,6 +33,9 @@ private:
 	bool createFramebuffers();
 	bool createCommandBuffers();
 	bool createGlobalParameters();
+	bool createGlobalDescriptorSetLayout();
+	bool createGlobalDescriptorPool();
+	bool createGlobalDescriptorSets();
 	bool createSynchObjects();
 
 	void cleanupSwapChain();
@@ -67,6 +70,10 @@ private:
 	uint32_t m_imageIndex;
 
 	std::vector<RenderDevice::Buffer> m_globalParameters;
+
+	RenderDevice::DescriptorSetLayout m_globalDescriptorSetLayout;
+	RenderDevice::DescriptorPool m_globalDescriptorPool;
+	std::vector<RenderDevice::DescriptorSet> m_globalDescriptorSets;
 
 	TileRenderer m_tileRenderer;
 };

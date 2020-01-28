@@ -46,6 +46,8 @@ public:
 	typedef Pipeline_T* Pipeline;
 
 	typedef VkDescriptorSetLayout DescriptorSetLayout;
+	typedef VkDescriptorPool DescriptorPool;
+	typedef VkDescriptorSet DescriptorSet;
 
 	typedef VkCommandBuffer CommandBuffer;
 	typedef VkSemaphore Semaphore;
@@ -107,6 +109,14 @@ public:
 
 	bool CreateDescriptorSetLayout(DescriptorType type, ShaderStageFlags stageFlags, DescriptorSetLayout* descriptorSetLayout);
 	void DestroyDescriptorSetLayout(DescriptorSetLayout descriptorSetLayout);
+
+	bool CreateDescriptorPool(DescriptorType type, size_t descriptorCount, DescriptorPool* descriptorPool);
+	void DestroyDescriptorPool(DescriptorPool descriptorPool);
+
+	bool AllocateDescriptorSets(DescriptorPool descriptorPool, size_t descriptorSetCount, DescriptorSetLayout* layouts, DescriptorSet* descriptorSets);
+	void FreeDescriptorSets(DescriptorPool descriptorPool, size_t descriptorSetCount, DescriptorSet* descriptorSets);
+	void UpdateDescriptorSet(DescriptorSet descriptorSet, DescriptorType type, Buffer buffer, size_t offset, size_t range);
+	void BindDescriptorSets(CommandBuffer commandBuffer, Pipeline pipeline, size_t firstSet, size_t descriptorSetCount, DescriptorSet* descriptorSets);
 
 	bool AllocateCommandBuffers(size_t count, CommandBuffer* commandBuffers);
 	void FreeCommandBuffers(size_t count, CommandBuffer* commandBuffers);
@@ -177,10 +187,6 @@ private:
 
 	VkQueue m_graphicsQueue;
 	VkQueue m_presentQueue;
-
-	/*
-	VkDescriptorSetLayout m_descriptorSetLayout;*/
-	std::map<std::string, Pipeline> m_graphicsPipelines;
 
 	VkCommandPool m_commandPool;
 

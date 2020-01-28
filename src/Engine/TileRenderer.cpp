@@ -14,17 +14,15 @@ TileRenderer::~TileRenderer()
 {
 }
 
-bool TileRenderer::Init(RenderDevice::RenderPass renderPass, size_t width, size_t height)
+bool TileRenderer::Init(RenderDevice::RenderPass renderPass, size_t viewportWidth, size_t viewportHeight, RenderDevice::DescriptorSetLayout globalDescriptorSetLayout)
 {
 	RenderDevice* renderDevice = RenderDevice::GetInstance();
 
-	if (!renderDevice->CreateDescriptorSetLayout(
-		VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-		VK_SHADER_STAGE_VERTEX_BIT,
-		&m_descriptorSetLayout))
-		return false;
+	RenderDevice::DescriptorSetLayout descriptorSetLayouts[] = {
+		globalDescriptorSetLayout
+	};
 
-	if (!renderDevice->CreateGraphicsPipeline("tile", renderPass, width, height, 1, &m_descriptorSetLayout, &m_pipeline))
+	if (!renderDevice->CreateGraphicsPipeline("tile", renderPass, viewportWidth, viewportHeight, 1, descriptorSetLayouts, &m_pipeline))
 		return false;
 
 	uint16_t indices[] = {
@@ -49,11 +47,17 @@ void TileRenderer::Prepare()
 
 }
 
-void TileRenderer::Render(RenderDevice::CommandBuffer commandBuffer)
+void TileRenderer::Render(RenderDevice::CommandBuffer commandBuffer, RenderDevice::DescriptorSet globalDescriptorSet)
 {
 	RenderDevice* renderDevice = RenderDevice::GetInstance();
 
+	RenderDevice::DescriptorSet descriptorSets[] =
+	{
+		globalDescriptorSet
+	};
+
 	renderDevice->BindGrapchicsPipeline(commandBuffer, m_pipeline);
+	renderDevice->BindDescriptorSets(commandBuffer, m_pipeline, 0, 1, descriptorSets);
 	renderDevice->BindIndexBuffer(commandBuffer, m_indexBuffer, 0);
 	renderDevice->DrawIndexed(commandBuffer, 6, 1, 0, 0, 0);
 }
