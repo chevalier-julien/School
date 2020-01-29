@@ -15,9 +15,13 @@ public:
 	typedef VkResult Result;
 	typedef VkFormat Format;
 	typedef VkImage Image;
+	typedef VkImageTiling ImageTiling;
+	typedef VkImageUsageFlags ImageUsageFlags;
 	typedef VkImageView ImageView;
+	typedef VkSampler Sampler;
 	typedef VkDescriptorType DescriptorType;
 	typedef VkShaderStageFlags ShaderStageFlags;
+	typedef VkMemoryPropertyFlags MemoryPropertyFlags;
 
 	struct Buffer_T
 	{
@@ -25,6 +29,14 @@ public:
 		VkDeviceMemory	bufferMemory;
 	};
 	typedef Buffer_T* Buffer;
+
+	struct Texture_T
+	{
+		VkImage			handle;
+		VkDeviceMemory	imageMemory;
+		VkImageView		view;
+	};
+	typedef Texture_T* Texture;
 
 	struct Swapchain_T
 	{
@@ -72,6 +84,15 @@ public:
 		std::vector<VkPresentModeKHR>	presentModes;
 	};
 
+	enum SamplerType
+	{
+		SamplerType_Nearest_Clamp,
+		SamplerType_Linear_Clamp,
+		SamplerType_Nearest_Repeat,
+		SamplerType_Linear_Repeat,
+		SamplerType_Count
+	};
+
 public:
 	static bool Create();
 	static void Destroy();
@@ -81,8 +102,14 @@ public:
 	bool CreateUniformBuffer(size_t bufferSize, Buffer* uniformBuffer);
 	bool CreateIndexBuffer(void* data, size_t size, Buffer* indexBuffer);
 	void BindIndexBuffer(CommandBuffer commandBuffer, Buffer buffer, size_t offset);
+	
+	bool CreateTexture(size_t width, size_t height, Format format, ImageTiling tiling, ImageUsageFlags usage, MemoryPropertyFlags properties, Texture* texture);
+	bool CreateTexture(void* data, size_t width, size_t height, Texture* texture);
+	void DestroyTexture(Texture texture);
 
-	Result MapBuffer(Buffer buffer, size_t offset, size_t size, void** data);
+	Sampler GetSampler(SamplerType samplerType);
+
+	bool MapBuffer(Buffer buffer, size_t offset, size_t size, void** data);
 	void UnmapBuffer(Buffer buffer);
 	void DestroyBuffer(Buffer buffer);
 
@@ -150,6 +177,7 @@ private:
 	bool pickPhysicalDevice();
 	bool createLogicalDevice();
 	bool createCommandPool();
+	bool createSamplers();
 
 	bool createShaderModule(const std::vector<char>& code, VkShaderModule& shaderModule);
 
@@ -165,8 +193,13 @@ private:
 	bool checkValidationLayerSupport();
 
 	bool createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
+	VkCommandBuffer beginSingleTimeCommands();
+	void endSingleTimeCommands(VkCommandBuffer commandBuffer);
 	void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 	uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
+
+	void transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
+	void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
 
 	static bool readFile(const char* filename, std::vector<char>& buffer);
 	static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
@@ -189,6 +222,8 @@ private:
 	VkQueue m_presentQueue;
 
 	VkCommandPool m_commandPool;
+
+	Sampler m_samplers[SamplerType_Count];
 
 	bool m_enableValidationLayers;
 	std::vector<const char*> m_validationLayers;

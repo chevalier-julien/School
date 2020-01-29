@@ -265,6 +265,8 @@ bool SvcRender::createSynchObjects()
 
 void SvcRender::cleanupSwapChain()
 {
+	m_tileRenderer.CleanupSwapChain();
+
 	m_globalDescriptorSets.clear();
 
 	m_renderDevice->DestroyDescriptorPool(m_globalDescriptorPool);
@@ -345,6 +347,9 @@ bool SvcRender::recreateSwapChain()
 	if (!createGlobalDescriptorSets())
 		return false;
 
+	if (!m_tileRenderer.RecreateSwapChain(m_renderPass, m_swapchain->extent.width, m_swapchain->extent.height, m_globalDescriptorSetLayout))
+		return false;
+
 	return true;
 }
 
@@ -359,7 +364,7 @@ bool SvcRender::updateGlobalParameters()
 	gParams.viewportSize = glm::vec4(width, height, 1.0f / width, 1.0f / height);
 
 	void* data;
-	if (m_renderDevice->MapBuffer(currentGlobalParameters, 0, sizeof(gParams), &data) != VK_SUCCESS)
+	if (!m_renderDevice->MapBuffer(currentGlobalParameters, 0, sizeof(gParams), &data))
 		return false;
 
 	memcpy(data, &gParams, sizeof(gParams));
