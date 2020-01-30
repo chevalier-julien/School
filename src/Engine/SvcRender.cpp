@@ -208,8 +208,12 @@ bool SvcRender::createGlobalParameters()
 
 bool SvcRender::createGlobalDescriptorSetLayout()
 {
+	const RenderDevice::DescriptorType descriptorTypes[] = {
+		VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER
+	};
+
 	if (!m_renderDevice->CreateDescriptorSetLayout(
-		VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+		1, descriptorTypes,
 		VK_SHADER_STAGE_ALL_GRAPHICS,
 		&m_globalDescriptorSetLayout))
 		return false;
@@ -219,7 +223,9 @@ bool SvcRender::createGlobalDescriptorSetLayout()
 
 bool SvcRender::createGlobalDescriptorPool()
 {
-	if (!m_renderDevice->CreateDescriptorPool(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, m_swapchain->images.size(), &m_globalDescriptorPool))
+	RenderDevice::DescriptorType descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+
+	if (!m_renderDevice->CreateDescriptorPool(1,&descriptorType, m_swapchain->images.size(), &m_globalDescriptorPool))
 		return false;
 
 	return true;
@@ -235,7 +241,13 @@ bool SvcRender::createGlobalDescriptorSets()
 
 	for (size_t i = 0; i < m_globalDescriptorSets.size(); ++i)
 	{
-		m_renderDevice->UpdateDescriptorSet(m_globalDescriptorSets[i], VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, m_globalParameters[i], 0, sizeof(GlobalParameters));
+		RenderDevice::DescriptorBufferInfo bufferInfos;
+		bufferInfos.buffer = m_globalParameters[i];
+		bufferInfos.offset = 0;
+		bufferInfos.range = sizeof(GlobalParameters);
+		bufferInfos.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+
+		m_renderDevice->UpdateDescriptorSet(m_globalDescriptorSets[i], 1, &bufferInfos, 0, nullptr);
 	}
 
 	return true;

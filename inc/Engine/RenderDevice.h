@@ -61,6 +61,21 @@ public:
 	typedef VkDescriptorPool DescriptorPool;
 	typedef VkDescriptorSet DescriptorSet;
 
+	struct DescriptorBufferInfo
+	{
+		Buffer buffer;
+		uint32_t offset;
+		uint32_t range;
+		DescriptorType type;
+	};
+
+	struct DescriptorImageInfo
+	{
+		Texture texture;
+		Sampler sampler;
+		DescriptorType type;
+	};
+
 	typedef VkCommandBuffer CommandBuffer;
 	typedef VkSemaphore Semaphore;
 	typedef VkFence Fence;
@@ -100,11 +115,11 @@ public:
 	static RenderDevice* GetInstance();
 
 	bool CreateUniformBuffer(size_t bufferSize, Buffer* uniformBuffer);
-	bool CreateIndexBuffer(void* data, size_t size, Buffer* indexBuffer);
+	bool CreateIndexBuffer(const void* data, size_t size, Buffer* indexBuffer);
 	void BindIndexBuffer(CommandBuffer commandBuffer, Buffer buffer, size_t offset);
 	
 	bool CreateTexture(size_t width, size_t height, Format format, ImageTiling tiling, ImageUsageFlags usage, MemoryPropertyFlags properties, Texture* texture);
-	bool CreateTexture(void* data, size_t width, size_t height, Texture* texture);
+	bool CreateTexture(const void* data, size_t width, size_t height, Texture* texture);
 	void DestroyTexture(Texture texture);
 
 	Sampler GetSampler(SamplerType samplerType);
@@ -134,15 +149,15 @@ public:
 	void DestroyGraphicsPipeline(Pipeline pipeline);
 	void BindGrapchicsPipeline(CommandBuffer commandBuffer, Pipeline pipeline);
 
-	bool CreateDescriptorSetLayout(DescriptorType type, ShaderStageFlags stageFlags, DescriptorSetLayout* descriptorSetLayout);
+	bool CreateDescriptorSetLayout(size_t descriptorCount, const DescriptorType* descriptorTypes, ShaderStageFlags stageFlags, DescriptorSetLayout* descriptorSetLayout);
 	void DestroyDescriptorSetLayout(DescriptorSetLayout descriptorSetLayout);
 
-	bool CreateDescriptorPool(DescriptorType type, size_t descriptorCount, DescriptorPool* descriptorPool);
+	bool CreateDescriptorPool(size_t poolCount, const DescriptorType* descriptorTypes, size_t descriptorCount, DescriptorPool* descriptorPool);
 	void DestroyDescriptorPool(DescriptorPool descriptorPool);
 
 	bool AllocateDescriptorSets(DescriptorPool descriptorPool, size_t descriptorSetCount, DescriptorSetLayout* layouts, DescriptorSet* descriptorSets);
 	void FreeDescriptorSets(DescriptorPool descriptorPool, size_t descriptorSetCount, DescriptorSet* descriptorSets);
-	void UpdateDescriptorSet(DescriptorSet descriptorSet, DescriptorType type, Buffer buffer, size_t offset, size_t range);
+	void UpdateDescriptorSet(DescriptorSet descriptorSet, size_t bufferCount, const DescriptorBufferInfo* buffers, size_t imageCount, const DescriptorImageInfo* images);
 	void BindDescriptorSets(CommandBuffer commandBuffer, Pipeline pipeline, size_t firstSet, size_t descriptorSetCount, DescriptorSet* descriptorSets);
 
 	bool AllocateCommandBuffers(size_t count, CommandBuffer* commandBuffers);
