@@ -100,6 +100,23 @@ void RenderDevice::BindIndexBuffer(CommandBuffer commandBuffer, Buffer buffer, s
 	vkCmdBindIndexBuffer(commandBuffer, buffer->handle, offset, VK_INDEX_TYPE_UINT16);
 }
 
+bool RenderDevice::CreateStorageBuffer(size_t bufferSize, Buffer* storageBuffer)
+{
+	VkBuffer vkStorageBuffer;
+	VkDeviceMemory vkStorageBufferMemory;
+	if (!createBuffer(bufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, vkStorageBuffer, vkStorageBufferMemory))
+	{
+		SvcLog::Printf(SvcLog::ELevel_Error, "failed to create storage buffer!");
+		return false;
+	}
+
+	*storageBuffer = new Buffer_T;
+	(*storageBuffer)->handle = vkStorageBuffer;
+	(*storageBuffer)->bufferMemory = vkStorageBufferMemory;
+
+	return true;
+}
+
 bool RenderDevice::CreateTexture(size_t width, size_t height, Format format, ImageTiling tiling, ImageUsageFlags usage, MemoryPropertyFlags properties, Texture* texture)
 {
 	VkImageCreateInfo imageInfo = {};
@@ -636,7 +653,6 @@ void RenderDevice::BindGrapchicsPipeline(CommandBuffer commandBuffer, Pipeline p
 bool RenderDevice::CreateDescriptorSetLayout(size_t descriptorCount, const DescriptorType* descriptorTypes, ShaderStageFlags stageFlags, DescriptorSetLayout* descriptorSetLayout)
 {
 	VkDescriptorSetLayoutBinding binding;
-	binding.binding = 0;
 	binding.descriptorCount = 1;
 	binding.stageFlags = stageFlags;
 	binding.pImmutableSamplers = nullptr;
@@ -644,6 +660,7 @@ bool RenderDevice::CreateDescriptorSetLayout(size_t descriptorCount, const Descr
 	std::vector<VkDescriptorSetLayoutBinding> bindings(descriptorCount, binding);
 	for (size_t i = 0; i < descriptorCount; ++i)
 	{
+		bindings[i].binding = static_cast<uint32_t>(i);
 		bindings[i].descriptorType = descriptorTypes[i];
 	}
 
@@ -1183,7 +1200,7 @@ bool RenderDevice::createSamplers()
 			samplerInfo.minFilter = filters[filterIndex];
 			samplerInfo.mipmapMode = mipFilters[filterIndex];
 
-			if (!vkCreateSampler(m_device, &samplerInfo, nullptr, m_samplers + samplerIndex++))
+			if (vkCreateSampler(m_device, &samplerInfo, nullptr, m_samplers + samplerIndex++) != VK_SUCCESS)
 			{
 				SvcLog::Printf(SvcLog::ELevel_Error, "failed to crea texture sampler!");
 				return false;

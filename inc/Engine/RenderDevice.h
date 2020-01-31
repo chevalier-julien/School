@@ -118,6 +118,8 @@ public:
 	bool CreateIndexBuffer(const void* data, size_t size, Buffer* indexBuffer);
 	void BindIndexBuffer(CommandBuffer commandBuffer, Buffer buffer, size_t offset);
 	
+	bool CreateStorageBuffer(size_t bufferSize, Buffer* storageBuffer);
+
 	bool CreateTexture(size_t width, size_t height, Format format, ImageTiling tiling, ImageUsageFlags usage, MemoryPropertyFlags properties, Texture* texture);
 	bool CreateTexture(const void* data, size_t width, size_t height, Texture* texture);
 	void DestroyTexture(Texture texture);
