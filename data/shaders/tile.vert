@@ -6,32 +6,24 @@ layout(set = 0, binding = 0) uniform GlobalParameters
 	vec4 viewportSize;
 } gParams;
 
-layout(set = 1, binding = 0) uniform TileSetParameters
+layout(set = 1, binding = 0) uniform TileSetInfos
 {
 	uint size;
 } gTileSet;
 
-layout(set = 2, binding = 0) uniform TileSetInstanceInfos
+layout(set = 1, binding = 1) uniform TileSetInstanceInfos
 {
-	vec2 position;
-} gInstanceInfos;
+	vec4 position_scale;
+} gInstance;
 
-
-struct TileSetInstanceData
+struct TileData
 {
 	uint id;
-	vec2 position;
+	vec4 offset_scale;
 };
 
-/*const TileSetInstanceData InstanceBuffer[] = {
-	{0, vec2(0.0, 0.0)},
-	{0, vec2(256.0, 0.0)},
-	{0, vec2(0.0, 256.0)},
-	{0, vec2(256.0, 256.0)}
-};*/
-
-layout(set = 2, binding = 1) buffer InstanceBufferLayout {
-	TileSetInstanceData InstanceBuffer[];
+layout(set = 1, binding = 2) readonly buffer TileBufferLayout {
+	TileData TileBuffer[];
 };
 
 
@@ -61,13 +53,12 @@ vec3 colors[4] = vec3[](
 
 void main()
 {
-	TileSetInstanceData tileData = InstanceBuffer[gl_InstanceIndex];
+	TileData tileData = TileBuffer[gl_InstanceIndex];
 	
 	const float TileSize = 256.0;
 	
-	vec2 p = tileData.position + offsets[gl_VertexIndex] * TileSize;
-	p += gInstanceInfos.position;
-
+	vec2 p = offsets[gl_VertexIndex] * tileData.offset_scale.zw * TileSize + tileData.offset_scale.xy;
+	p = p * gInstance.position_scale.zw + gInstance.position_scale.xy;
 
 	uvec2 tileCoord = uvec2(tileData.id%gTileSet.size, tileData.id/gTileSet.size);
 	vec2 uv = vec2(tileCoord) + offsets[gl_VertexIndex] / float(gTileSet.size);

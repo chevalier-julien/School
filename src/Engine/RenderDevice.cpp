@@ -712,7 +712,7 @@ void RenderDevice::DestroyDescriptorPool(DescriptorPool descriptorPool)
 	vkDestroyDescriptorPool(m_device, descriptorPool, nullptr);
 }
 
-bool RenderDevice::AllocateDescriptorSets(DescriptorPool descriptorPool, size_t descriptorSetCount, DescriptorSetLayout* layouts, DescriptorSet* descriptorSets)
+bool RenderDevice::AllocateDescriptorSets(DescriptorPool descriptorPool, size_t descriptorSetCount, const DescriptorSetLayout* layouts, DescriptorSet* descriptorSets)
 {
 	VkDescriptorSetAllocateInfo allocInfo = {};
 	allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
@@ -774,7 +774,7 @@ void RenderDevice::UpdateDescriptorSet(DescriptorSet descriptorSet, size_t buffe
 	vkUpdateDescriptorSets(m_device, static_cast<uint32_t>(descriptorWrite.size()), descriptorWrite.data(), 0, nullptr);
 }
 
-void RenderDevice::BindDescriptorSets(CommandBuffer commandBuffer, Pipeline pipeline, size_t firstSet, size_t descriptorSetCount, DescriptorSet* descriptorSets)
+void RenderDevice::BindDescriptorSets(CommandBuffer commandBuffer, Pipeline pipeline, size_t firstSet, size_t descriptorSetCount, const DescriptorSet* descriptorSets)
 {
 	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->layout, static_cast<uint32_t>(firstSet), static_cast<uint32_t>(descriptorSetCount), descriptorSets, 0, nullptr);
 }

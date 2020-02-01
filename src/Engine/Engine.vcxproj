@@ -185,6 +185,7 @@
     <ClCompile Include="SvcTime.cpp" />
     <ClCompile Include="SvcWindow.cpp" />
     <ClCompile Include="TileRenderer.cpp" />
+    <ClCompile Include="TileSet.cpp" />
     <ClCompile Include="XMLUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -199,6 +200,7 @@
     <ClInclude Include="..\..\inc\Engine\SvcTime.h" />
     <ClInclude Include="..\..\inc\Engine\SvcWindow.h" />
     <ClInclude Include="..\..\inc\Engine\TileRenderer.h" />
+    <ClInclude Include="..\..\inc\Engine\TileSet.h" />
     <ClInclude Include="..\..\inc\Engine\Types.h" />
     <ClInclude Include="..\..\inc\Engine\XMLUtils.h" />
   </ItemGroup>

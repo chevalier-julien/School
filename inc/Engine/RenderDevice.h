@@ -157,10 +157,10 @@ public:
 	bool CreateDescriptorPool(size_t poolCount, const DescriptorType* descriptorTypes, size_t descriptorCount, DescriptorPool* descriptorPool);
 	void DestroyDescriptorPool(DescriptorPool descriptorPool);
 
-	bool AllocateDescriptorSets(DescriptorPool descriptorPool, size_t descriptorSetCount, DescriptorSetLayout* layouts, DescriptorSet* descriptorSets);
+	bool AllocateDescriptorSets(DescriptorPool descriptorPool, size_t descriptorSetCount, const DescriptorSetLayout* layouts, DescriptorSet* descriptorSets);
 	void FreeDescriptorSets(DescriptorPool descriptorPool, size_t descriptorSetCount, DescriptorSet* descriptorSets);
 	void UpdateDescriptorSet(DescriptorSet descriptorSet, size_t bufferCount, const DescriptorBufferInfo* buffers, size_t imageCount, const DescriptorImageInfo* images);
-	void BindDescriptorSets(CommandBuffer commandBuffer, Pipeline pipeline, size_t firstSet, size_t descriptorSetCount, DescriptorSet* descriptorSets);
+	void BindDescriptorSets(CommandBuffer commandBuffer, Pipeline pipeline, size_t firstSet, size_t descriptorSetCount, const DescriptorSet* descriptorSets);
 
 	bool AllocateCommandBuffers(size_t count, CommandBuffer* commandBuffers);
 	void FreeCommandBuffers(size_t count, CommandBuffer* commandBuffers);

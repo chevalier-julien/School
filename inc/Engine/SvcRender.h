@@ -20,6 +20,8 @@ public:
 
 	static SvcRender* GetInstance();
 
+	const TileRenderer& GetTileRenderer() const;
+
 private:
 	SvcRender();
 	~SvcRender() {}

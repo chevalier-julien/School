@@ -31,6 +31,11 @@ SvcRender* SvcRender::GetInstance()
 	return ms_instance;
 }
 
+const TileRenderer& SvcRender::GetTileRenderer() const
+{
+	return m_tileRenderer;
+}
+
 SvcRender::SvcRender()
 	: m_renderDevice(nullptr)
 	, m_swapchain(nullptr)
