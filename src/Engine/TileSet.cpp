@@ -1,10 +1,11 @@
 #include "TileSet.h"
 
 #include "SvcRender.h"
-#include "SvcLog.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
+
+#include "SvcLog.h"
 
 TileSet::TileSet()
 	: m_texture(nullptr)
@@ -67,6 +68,21 @@ void TileSet::Release()
 	m_texture = nullptr;
 }
 
+bool TileSet::Load(const char* name)
+{
+	return Init(name);
+}
+
+void TileSet::Unload()
+{
+	Release();
+}
+
+bool TileSet::Save(const char* name)
+{
+	return true;
+}
+
 RenderDevice::Texture TileSet::GetTexture() const		{ return m_texture; }
 RenderDevice::Buffer TileSet::GetInfosBuffer() const		{ return m_infosBuffer; }
 
@@ -82,9 +98,8 @@ TileSetModel::~TileSetModel()
 	Release();
 }
 
-bool TileSetModel::Init(const std::shared_ptr<TileSet>& tileSet, u32 tileCount, const TileData* tileData)
+bool TileSetModel::Init(u32 tileCount, const TileData* tileData)
 {
-	m_tileSet = tileSet;
 	m_tileCount = tileCount;
 
 	const size_t bufferSize = sizeof(TileData) * m_tileCount;
@@ -107,10 +122,9 @@ void TileSetModel::Release()
 	RenderDevice::GetInstance()->DestroyBuffer(m_tileBuffer);
 	m_tileBuffer = nullptr;
 }
-const TileSet* TileSetModel::GetTileSet() const				{ return m_tileSet.get(); }
+
 u32 TileSetModel::GetTileCount() const						{ return m_tileCount; }
 RenderDevice::Buffer TileSetModel::GetTileBuffer() const		{ return m_tileBuffer;  }
-
 
 
 TileSetInstance::TileSetInstance()
@@ -119,8 +133,9 @@ TileSetInstance::TileSetInstance()
 {
 }
 
-bool TileSetInstance::Init(const std::shared_ptr<TileSetModel>& model, const glm::vec2 position, const glm::vec2 scale)
+bool TileSetInstance::Init(const std::shared_ptr<TileSet>& tileSet, const std::shared_ptr<TileSetModel>& model, const glm::vec2 position, const glm::vec2 scale)
 {
+	m_tileSet = tileSet;
 	m_model = model;
 
 	const size_t bufferSize = sizeof(Infos);
@@ -146,13 +161,13 @@ bool TileSetInstance::Init(const std::shared_ptr<TileSetModel>& model, const glm
 		return false;
 
 	RenderDevice::DescriptorBufferInfo bufferInfos[] = {
-		{ m_model->GetTileSet()->GetInfosBuffer(), 0, sizeof(TileSet::Infos), VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER },
+		{ m_tileSet->GetInfosBuffer(), 0, sizeof(TileSet::Infos), VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER },
 		{ m_infosBuffer, 0, sizeof(Infos), VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER },
 		{ m_model->GetTileBuffer(), 0, m_model->GetTileCount()*sizeof(TileSetModel::TileData), VK_DESCRIPTOR_TYPE_STORAGE_BUFFER }
 	};
 
 	RenderDevice::DescriptorImageInfo imageInfos = {
-		m_model->GetTileSet()->GetTexture(),
+		m_tileSet->GetTexture(),
 		RenderDevice::GetInstance()->GetSampler(RenderDevice::SamplerType_Nearest_Clamp),
 		VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER
 	};
@@ -165,7 +180,12 @@ void TileSetInstance::Release()
 {
 	RenderDevice::GetInstance()->DestroyBuffer(m_infosBuffer);
 	m_infosBuffer = nullptr;
+
+	m_model = nullptr;
+
+	ResourceFactory< TileSet >::ReleaseResource(m_tileSet);
 }
 
+const TileSet* TileSetInstance::GetTileSet() const						{ return m_tileSet.get(); }
 const TileSetModel* TileSetInstance::GetModel() const					{ return m_model.get(); }
 RenderDevice::DescriptorSet	TileSetInstance::GetDescriptorSet() const	{ return m_descriptorSet; }

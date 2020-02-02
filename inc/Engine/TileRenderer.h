@@ -3,7 +3,6 @@
 #include "RenderDevice.h"
 
 class TileSetInstance;
-class TileSet;
 
 class TileRenderer
 {
@@ -19,14 +18,10 @@ public:
 	void CleanupSwapChain();
 	bool RecreateSwapChain(RenderDevice::RenderPass renderPass, size_t viewportWidth, size_t viewportHeight, RenderDevice::DescriptorSetLayout globalDescriptorSetLayout);
 
-	RenderDevice::DescriptorSetLayout GetTileSetDescriptorSetLayout() const;
-	RenderDevice::DescriptorPool GetTileSetDescriptorPool() const;
-	
 	RenderDevice::DescriptorSetLayout GetTileSetInstanceDescriptorSetLayout() const;
 	RenderDevice::DescriptorPool GetTileSetInstanceDescriptorPool() const;
 
 public:
-	static const size_t MaxTileSetDescriptorCount = 256;
 	static const size_t MaxTileSetInstanceDescriptorCount = 1024;
 
 private:

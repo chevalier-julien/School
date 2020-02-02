@@ -1,8 +1,9 @@
 #include "TileRenderer.h"
 
-#include "SvcLog.h"
 #include "SvcRender.h"
 #include "TileSet.h"
+
+#include "SvcLog.h"
 
 TileRenderer::TileRenderer()
 	: m_tileSetInstanceDescriptorPool(nullptr)
@@ -26,22 +27,6 @@ bool TileRenderer::Init(RenderDevice::RenderPass renderPass, size_t viewportWidt
 
 	if (!RenderDevice::GetInstance()->CreateIndexBuffer(indices, sizeof(indices), &m_indexBuffer))
 		return false;
-
-	/*const RenderDevice::DescriptorType tileSetDescriptorPoolTypes[] = {
-		VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-		VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER
-	};
-
-	if (!RenderDevice::GetInstance()->CreateDescriptorPool(2, tileSetDescriptorPoolTypes, MaxTileSetDescriptorCount, &m_tileSetDescriptorPool))
-		return false;
-
-	const RenderDevice::DescriptorType tileSetDescriptorSetTypes[] = {
-		VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-		VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER
-	};
-
-	if (!RenderDevice::GetInstance()->CreateDescriptorSetLayout(2, tileSetDescriptorSetTypes, VK_SHADER_STAGE_ALL_GRAPHICS, &m_tileSetDescriptorSetLayout))
-		return false;*/
 
 	const RenderDevice::DescriptorType tileSetInstanceDescriptorPoolTypes[] = {
 		VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
@@ -70,8 +55,7 @@ bool TileRenderer::Init(RenderDevice::RenderPass renderPass, size_t viewportWidt
 	if (!RenderDevice::GetInstance()->CreateGraphicsPipeline("tile", renderPass, viewportWidth, viewportHeight, 2, descriptorSetLayouts, &m_pipeline))
 		return false;
 
-	std::shared_ptr<TileSet> tileSet(new TileSet);
-	tileSet->Init("../../data/textures/texture.jpg");
+	std::shared_ptr<TileSet> tileSet = ResourceFactory< TileSet >::GetResource("../../data/textures/texture.jpg");
 
 	const u32 tileCount = 4;
 	TileSetModel::TileData tileData[tileCount] = {
@@ -82,10 +66,10 @@ bool TileRenderer::Init(RenderDevice::RenderPass renderPass, size_t viewportWidt
 	};
 
 	std::shared_ptr<TileSetModel> model(new TileSetModel);
-	model->Init(tileSet, tileCount, tileData);
+	model->Init(tileCount, tileData);
 
 	m_tileSetInstance = new TileSetInstance;
-	m_tileSetInstance->Init(model, glm::vec2(0.0f));
+	m_tileSetInstance->Init(tileSet, model, glm::vec2(0.0f));
 
 	return true;
 }

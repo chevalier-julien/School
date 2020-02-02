@@ -1,12 +1,12 @@
 #pragma once
 
 #include "RenderDevice.h"
+#include "Resource.h"
 
-#include <memory>
 #include <glm/vec2.hpp>
 #include <glm/vec4.hpp>
 
-class TileSet
+class TileSet : public IResource
 {
 public:
 	struct Infos
@@ -19,6 +19,10 @@ public:
 	~TileSet();
 	bool Init(const char* textureName);
 	void Release();
+
+	bool Load(const char* name);
+	void Unload();
+	bool Save(const char* name);
 
 	RenderDevice::Texture GetTexture() const;
 	RenderDevice::Buffer GetInfosBuffer() const;
@@ -40,15 +44,13 @@ public:
 public:
 	TileSetModel();
 	~TileSetModel();
-	bool Init(const std::shared_ptr<TileSet>& tileSet, u32 tileCount, const TileData* tileData);
+	bool Init(u32 tileCount, const TileData* tileData);
 	void Release();
 
-	const TileSet* GetTileSet() const;
 	u32 GetTileCount() const;
 	RenderDevice::Buffer GetTileBuffer() const;
 
 private:
-	std::shared_ptr<TileSet>		m_tileSet;
 	u32							m_tileCount;
 	RenderDevice::Buffer			m_tileBuffer;
 };
@@ -63,13 +65,15 @@ public:
 
 public:
 	TileSetInstance();
-	bool Init(const std::shared_ptr<TileSetModel>& model, const glm::vec2 position, const glm::vec2 scale = glm::vec2(1.0f));
+	bool Init(const std::shared_ptr<TileSet>& tileSet, const std::shared_ptr<TileSetModel>& model, const glm::vec2 position, const glm::vec2 scale = glm::vec2(1.0f));
 	void Release();
 
+	const TileSet* GetTileSet() const;
 	const TileSetModel* GetModel() const;
 	RenderDevice::DescriptorSet	GetDescriptorSet() const;
 
 private:
+	std::shared_ptr<TileSet>			m_tileSet;
 	std::shared_ptr<TileSetModel>	m_model;
 	RenderDevice::Buffer				m_infosBuffer;
 	RenderDevice::DescriptorSet		m_descriptorSet;

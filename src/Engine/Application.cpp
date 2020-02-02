@@ -2,6 +2,7 @@
 
 #include "SvcTime.h"
 #include "SvcLog.h"
+#include "ResourceManager.h"
 #include "SvcWindow.h"
 #include "SvcInput.h"
 #include "SvcRender.h"
@@ -18,6 +19,8 @@ void Application::Execute()
 
 bool Application::Init()
 {
+	ResourceManager::CreateFactories();
+
 	if (!SvcTime::Create())
 		return false;
 
@@ -43,6 +46,8 @@ void Application::Release()
 	SvcWindow::Destroy();
 	SvcLog::Destroy();
 	SvcTime::Destroy();
+
+	ResourceManager::DestroyFactories();
 }
 
 bool Application::Update()
