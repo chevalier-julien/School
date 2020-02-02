@@ -11,7 +11,7 @@ class TileSet : public IResource
 public:
 	struct Infos
 	{
-		alignas(16) u32	size;
+		alignas(16) glm::uvec2	sizes;
 	};
 
 public:
@@ -24,10 +24,16 @@ public:
 	void Unload();
 	bool Save(const char* name);
 
+	u32 GetTileSize() const;
+	u32 GetSetSize() const;
+
 	RenderDevice::Texture GetTexture() const;
 	RenderDevice::Buffer GetInfosBuffer() const;
 
 private:
+	u32	m_tileSize;
+	u32 m_setSize;
+
 	RenderDevice::Texture m_texture;
 	RenderDevice::Buffer m_infosBuffer;
 };
@@ -78,3 +84,6 @@ private:
 	RenderDevice::Buffer				m_infosBuffer;
 	RenderDevice::DescriptorSet		m_descriptorSet;
 };
+
+
+TileSetInstance* CreateTileSetInstance_Text(const std::string& text, const glm::vec2& position, const glm::vec2& scale = glm::vec2(1.0f));

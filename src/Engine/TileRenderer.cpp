@@ -55,21 +55,7 @@ bool TileRenderer::Init(RenderDevice::RenderPass renderPass, size_t viewportWidt
 	if (!RenderDevice::GetInstance()->CreateGraphicsPipeline("tile", renderPass, viewportWidth, viewportHeight, 2, descriptorSetLayouts, &m_pipeline))
 		return false;
 
-	std::shared_ptr<TileSet> tileSet = ResourceFactory< TileSet >::GetResource("../../data/textures/texture.jpg");
-
-	const u32 tileCount = 4;
-	TileSetModel::TileData tileData[tileCount] = {
-		{ 0, glm::vec4(0.0f, 0.0f, 1.0f, 1.0f) },
-		{ 0, glm::vec4(256.0f, 0.0f, 1.0f, 1.0f) },
-		{ 0, glm::vec4(0.0f, 256.0f, 1.0f, 1.0f) },
-		{ 0, glm::vec4(256.0f, 256.0f, 1.0f, 1.0f) },
-	};
-
-	std::shared_ptr<TileSetModel> model(new TileSetModel);
-	model->Init(tileCount, tileData);
-
-	m_tileSetInstance = new TileSetInstance;
-	m_tileSetInstance->Init(tileSet, model, glm::vec2(0.0f));
+	m_tileSetInstance = CreateTileSetInstance_Text("Hello World !\nHow are you Dave ?", glm::vec2(50.0f,10.0f), glm::vec2(4.0f));
 
 	return true;
 }

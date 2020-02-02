@@ -20,6 +20,9 @@ TileSet::~TileSet()
 
 bool TileSet::Init(const char* textureName)
 {
+	m_tileSize = 8;
+	m_setSize = 16;
+
 	{
 		int texWidth, texHeight, texChannels;
 		stbi_uc* pixels = stbi_load(textureName, &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
@@ -45,7 +48,8 @@ bool TileSet::Init(const char* textureName)
 			return false;
 
 		Infos infos;
-		infos.size = 1;
+		infos.sizes[0] = m_tileSize;
+		infos.sizes[1] = m_setSize;
 
 		void* data;
 		if (!RenderDevice::GetInstance()->MapBuffer(m_infosBuffer, 0, bufferSize, &data))
@@ -82,6 +86,9 @@ bool TileSet::Save(const char* name)
 {
 	return true;
 }
+
+u32 TileSet::GetTileSize() const							{ return m_tileSize; }
+u32 TileSet::GetSetSize() const							{ return m_setSize; }
 
 RenderDevice::Texture TileSet::GetTexture() const		{ return m_texture; }
 RenderDevice::Buffer TileSet::GetInfosBuffer() const		{ return m_infosBuffer; }
@@ -189,3 +196,45 @@ void TileSetInstance::Release()
 const TileSet* TileSetInstance::GetTileSet() const						{ return m_tileSet.get(); }
 const TileSetModel* TileSetInstance::GetModel() const					{ return m_model.get(); }
 RenderDevice::DescriptorSet	TileSetInstance::GetDescriptorSet() const	{ return m_descriptorSet; }
+
+
+TileSetInstance* CreateTileSetInstance_Text(const std::string& text, const glm::vec2& position, const glm::vec2& scale)
+{
+	std::shared_ptr< TileSet > tileSet = ResourceFactory< TileSet >::GetResource("../../data/textures/font.png");
+
+	if (tileSet == nullptr)
+		return nullptr;
+
+	std::vector<TileSetModel::TileData> tileData(text.size());
+
+	u32 tileCount = 0;
+	glm::vec4 offset_scale(0.0f, 0.0f, 1.0f, 1.0f);
+	for (size_t i = 0; i < text.size(); ++i)
+	{
+		char c = text[i];
+		if (c == '\n')
+		{
+			offset_scale.x = 0.0f;
+			offset_scale.y += tileSet->GetTileSize();
+			continue;
+		}
+
+		tileData[tileCount].id = c;
+		tileData[tileCount].offset_scale = offset_scale;
+		offset_scale.x += tileSet->GetTileSize();
+		++tileCount;
+	}
+
+	std::shared_ptr< TileSetModel > model(new TileSetModel);
+	if (!model->Init(tileCount, tileData.data()))
+		return nullptr;
+
+	TileSetInstance* instance = new TileSetInstance;
+	if (!instance->Init(tileSet, model, position, scale))
+	{
+		delete instance;
+		return nullptr;
+	}
+
+	return instance;
+}
