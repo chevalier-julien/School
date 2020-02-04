@@ -1,4 +1,4 @@
-#include "ConfigManager.h"
+#include "SvcConfig.h"
 
 #include "ConfigDesc.h"
 
