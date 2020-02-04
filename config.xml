@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<ConfigDesc>
+  <uvec2 id="windowSize">800,600</uvec2>
+  <string id="windowName">School Engine</string>
+  <string id="dataPath">data/</string>
+</ConfigDesc>

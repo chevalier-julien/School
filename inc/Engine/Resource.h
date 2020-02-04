@@ -11,7 +11,7 @@ class IResource
 public:
 	virtual bool Load(const char* name) = 0;
 	virtual void Unload() = 0;
-	virtual bool Save(const char* name) = 0;
+	//virtual bool Save(const char* name) = 0;
 };
 
 template< typename T >

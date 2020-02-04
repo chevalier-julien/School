@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<TileSetDesc>
+  <u32 id="tileSize">8</u32>
+  <u32 id="setSize">16</u32>
+  <string id="textureName">textures/font.png</string>
+</TileSetDesc>

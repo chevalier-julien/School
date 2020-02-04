@@ -1,5 +1,6 @@
 #include "SvcWindow.h"
 
+#include "ConfigManager.h"
 #include <glm/vec2.hpp>
 
 SvcWindow* SvcWindow::ms_instance = nullptr;
@@ -21,8 +22,9 @@ void SvcWindow::Destroy()
 
 bool SvcWindow::Init()
 {
-	glm::uvec2 size(800, 600);
-	const char* name = "My window";
+	SvcConfig* svcConfig = SvcConfig::GetInstance();
+	glm::uvec2 size = svcConfig->GetWindowSize();
+	const char* name = svcConfig->GetWindowName().c_str();
 
 	glfwInit();
 

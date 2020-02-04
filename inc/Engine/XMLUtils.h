@@ -178,3 +178,39 @@ public:
 	void xmlWrite(xmlNodePtr node) const;
 	void xmlRead(xmlNodePtr node);
 };
+
+template< typename T >
+bool LoadFromFile(const char* filename, T& xmlClass)
+{
+	xmlDocPtr doc = xmlParseFile(filename);
+	if (!doc)
+		return false;
+
+	xmlNode* root = xmlDocGetRootElement(doc);
+	if (xmlStrcmp(root->name, BAD_CAST T::xmlTypeName()))
+		return false;
+
+	xmlRead(root, xmlClass);
+
+	xmlFreeDoc(doc);
+	xmlCleanupParser();
+
+	return true;
+}
+
+template< typename T >
+bool SaveToFile(const char* filename, const T& xmlClass)
+{
+	xmlDocPtr doc = xmlNewDoc(BAD_CAST XML_DEFAULT_VERSION);
+	xmlNodePtr root = xmlNewDocNode(doc, NULL, BAD_CAST T::xmlTypeName(), NULL);
+	xmlDocSetRootElement(doc, root);
+
+	xmlWrite(xmlClass, root);
+
+	if (xmlSaveFormatFile(filename, doc, 1))
+		return false;
+
+	xmlFreeDoc(doc);
+
+	return true;
+}

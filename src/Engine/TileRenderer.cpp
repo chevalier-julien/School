@@ -2,6 +2,8 @@
 
 #include "SvcRender.h"
 #include "TileSet.h"
+#include "TileSetModel.h"
+#include "TileSetInstance.h"
 
 #include "SvcLog.h"
 

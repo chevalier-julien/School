@@ -1,5 +1,6 @@
 #include "Test_01.h"
 
+#include "Engine/ConfigManager.h"
 #include <iostream>
 
 #include "Engine/SvcLog.h"
@@ -30,21 +31,24 @@ xmlClass_Test::xmlClass_Test()
 
 void InitXMLClasses()
 {
-	xmlClass::RegisterMembers();
 	xmlClass_Test::RegisterMembers();
 }
 
 void ReleaseXMLClasses()
 {
-	xmlClass_Test::UnregisterMembers();
 	xmlClass::UnregisterMembers();
 }
 
-const char* Test_01::ms_fileName = "..\\..\\data\\config.xml";
+const char* Test_01::ms_fileName = "test.xml";
 
 Test_01::Test_01()
 {
-	Execute();
+	// command line
+	int arg = 1;
+	char root[] = "ROOT=../../";
+	char* argv[] = { root };
+
+	Execute(arg, argv);
 }
 
 bool Test_01::Init()
@@ -97,28 +101,16 @@ bool Test_01::Update()
 
 void Test_01::Load()
 {
-	xmlDocPtr doc = xmlParseFile(ms_fileName);
-	if (doc)
-	{
-		xmlNode* root = xmlDocGetRootElement(doc);
-		if (!xmlStrcmp(root->name, BAD_CAST m_test.xmlTypeName()))
-		{
-			xmlRead(root, m_test);
-		}
-	}
+	std::string fullPath = SvcConfig::GetInstance()->GetDataPath();
+	fullPath += ms_fileName;
 
-	xmlFreeDoc(doc);
-	xmlCleanupParser();
+	LoadFromFile(fullPath.c_str(), m_test);
 }
 
 void Test_01::Save()
 {
-	xmlDocPtr doc = xmlNewDoc(BAD_CAST XML_DEFAULT_VERSION);
-	xmlNodePtr root = xmlNewDocNode(doc, NULL, BAD_CAST m_test.xmlTypeName(), NULL);
-	xmlDocSetRootElement(doc, root);
+	std::string fullPath = SvcConfig::GetInstance()->GetDataPath();
+	fullPath += ms_fileName;
 
-	xmlWrite(m_test, root);
-		
-	xmlSaveFormatFile(ms_fileName, doc, 1);
-	xmlFreeDoc(doc);
+	SaveToFile(fullPath.c_str(), m_test);
 }
