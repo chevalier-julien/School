@@ -1,6 +1,6 @@
 #include "SvcWindow.h"
 
-#include "ConfigManager.h"
+#include "SvcConfig.h"
 #include <glm/vec2.hpp>
 
 SvcWindow* SvcWindow::ms_instance = nullptr;

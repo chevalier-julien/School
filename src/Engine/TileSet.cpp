@@ -1,7 +1,7 @@
 #include "TileSet.h"
 
 #include "TileSetDesc.h"
-#include "ConfigManager.h"
+#include "SvcConfig.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>

@@ -178,9 +178,9 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="ConfigDesc.cpp" />
-    <ClCompile Include="ConfigManager.cpp" />
     <ClCompile Include="RenderDevice.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
+    <ClCompile Include="SvcConfig.cpp" />
     <ClCompile Include="SvcInput.cpp" />
     <ClCompile Include="SvcLog.cpp" />
     <ClCompile Include="SvcRender.cpp" />
@@ -197,11 +197,11 @@
   <ItemGroup>
     <ClInclude Include="..\..\inc\Engine\Application.h" />
     <ClInclude Include="..\..\inc\Engine\ConfigDesc.h" />
-    <ClInclude Include="..\..\inc\Engine\ConfigManager.h" />
     <ClInclude Include="..\..\inc\Engine\RenderDevice.h" />
     <ClInclude Include="..\..\inc\Engine\IndexBuffer.h" />
     <ClInclude Include="..\..\inc\Engine\Resource.h" />
     <ClInclude Include="..\..\inc\Engine\ResourceManager.h" />
+    <ClInclude Include="..\..\inc\Engine\SvcConfig.h" />
     <ClInclude Include="..\..\inc\Engine\SvcInput.h" />
     <ClInclude Include="..\..\inc\Engine\SvcLog.h" />
     <ClInclude Include="..\..\inc\Engine\Serializer.h" />

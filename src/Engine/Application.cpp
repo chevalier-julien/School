@@ -4,7 +4,7 @@
 #include "ResourceManager.h"
 #include "SvcTime.h"
 #include "SvcLog.h"
-#include "ConfigManager.h"
+#include "SvcConfig.h"
 #include "SvcWindow.h"
 #include "SvcInput.h"
 #include "SvcRender.h"

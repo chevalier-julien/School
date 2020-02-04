@@ -1,6 +1,5 @@
 #include "Test_01.h"
 
-#include "Engine/ConfigManager.h"
 #include <iostream>
 
 #include "Engine/SvcLog.h"
@@ -101,16 +100,10 @@ bool Test_01::Update()
 
 void Test_01::Load()
 {
-	std::string fullPath = SvcConfig::GetInstance()->GetDataPath();
-	fullPath += ms_fileName;
-
-	LoadFromFile(fullPath.c_str(), m_test);
+	LoadFromFile(ms_fileName, m_test);
 }
 
 void Test_01::Save()
 {
-	std::string fullPath = SvcConfig::GetInstance()->GetDataPath();
-	fullPath += ms_fileName;
-
-	SaveToFile(fullPath.c_str(), m_test);
+	SaveToFile(ms_fileName, m_test);
 }
