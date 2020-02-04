@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <ConfigDesc>
+  <string id="dataPath">data/</string>
   <uvec2 id="windowSize">800,600</uvec2>
   <string id="windowName">School Engine</string>
-  <string id="dataPath">data/</string>
+  <string id="fontTileSetName">tilesets/font.xml</string>
 </ConfigDesc>
