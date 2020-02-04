@@ -3,8 +3,7 @@
 #include "TileSetDesc.h"
 #include "SvcConfig.h"
 
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb/stb_image.h>
+#include "Bitmap.h"
 
 #include "SvcLog.h"
 
@@ -28,22 +27,12 @@ bool TileSet::Init(const TileSetDesc& desc)
 		std::string fullpath = SvcConfig::GetInstance()->GetDataPath();
 		fullpath += desc.textureName;
 
-		int texWidth, texHeight, texChannels;
-		stbi_uc* pixels = stbi_load(fullpath.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
-
-		if (!pixels)
-		{
-			SvcLog::Printf(SvcLog::ELevel_Error, "failed to load texture image!");
+		Bitmap image;
+		if (!image.Load(fullpath.c_str()))
 			return false;
-		}
 
-		if (!RenderDevice::GetInstance()->CreateTexture(pixels, texWidth, texHeight, &m_texture))
-		{
-			stbi_image_free(pixels);
+		if (!RenderDevice::GetInstance()->CreateTexture(image.GetData(), image.GetWidth(), image.GetHeight(), &m_texture))
 			return false;
-		}
-
-		stbi_image_free(pixels);
 	}
 
 	{

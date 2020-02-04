@@ -3,6 +3,7 @@
 #include "XMLUtils.h"
 #include "ConfigDesc.h"
 #include "TileSetDesc.h"
+#include "TileSetMap.h"
 
 void xmlClassRegistry::RegisterClasses()
 {
@@ -11,10 +12,16 @@ void xmlClassRegistry::RegisterClasses()
 	ConfigDesc::RegisterMembers();
 
 	TileSetDesc::RegisterMembers();
+	TileSetMapping_Element::RegisterMembers();
+	TileSetMapping::RegisterMembers();
+	TileSetMap::RegisterMembers();
 }
 
 void xmlClassRegistry::UnregisterClasses()
 {
+	TileSetMap::UnregisterMembers();
+	TileSetMapping::UnregisterMembers();
+	TileSetMapping_Element::UnregisterMembers();
 	TileSetDesc::UnregisterMembers();
 
 	ConfigDesc::UnregisterMembers();

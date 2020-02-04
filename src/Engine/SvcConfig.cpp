@@ -33,6 +33,7 @@ const std::string& SvcConfig::GetRootPath() const	{ return m_rootPath; }
 const std::string& SvcConfig::GetDataPath() const	{ return m_dataPath; }
 const glm::uvec2& SvcConfig::GetWindowSize() const	{ return m_windowSize; }
 const std::string& SvcConfig::GetWindowName() const	{ return m_windowName; }
+const std::string& SvcConfig::GetFontTileSetName() const { return m_fontTileSetName; }
 
 bool SvcConfig::Init(const char* root, const char* config)
 {
@@ -66,6 +67,7 @@ bool SvcConfig::Init(const char* root, const char* config)
 	m_dataPath = dataPath.string();
 	m_windowSize = desc.windowSize;
 	m_windowName = desc.windowName;
+	m_fontTileSetName = desc.fontTileSetName;
 
 	return true;
 }

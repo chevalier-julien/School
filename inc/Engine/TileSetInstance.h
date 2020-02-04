@@ -32,5 +32,3 @@ private:
 	RenderDevice::Buffer				m_infosBuffer;
 	RenderDevice::DescriptorSet		m_descriptorSet;
 };
-
-TileSetInstance* CreateTileSetInstance_Text(const std::string& text, const glm::vec2& position, const glm::vec2& scale = glm::vec2(1.0f));

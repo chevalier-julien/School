@@ -9,7 +9,10 @@ class ConfigDesc : public xmlClass
 public:
 	ConfigDesc();
 
+	std::string	dataPath;
+
 	glm::uvec2	windowSize;
 	std::string	windowName;
-	std::string	dataPath;
+
+	std::string fontTileSetName;
 };

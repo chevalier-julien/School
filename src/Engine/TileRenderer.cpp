@@ -4,6 +4,7 @@
 #include "TileSet.h"
 #include "TileSetModel.h"
 #include "TileSetInstance.h"
+#include "TileSetInstanceHelper.h"
 
 #include "SvcLog.h"
 
@@ -57,7 +58,7 @@ bool TileRenderer::Init(RenderDevice::RenderPass renderPass, size_t viewportWidt
 	if (!RenderDevice::GetInstance()->CreateGraphicsPipeline("tile", renderPass, viewportWidth, viewportHeight, 2, descriptorSetLayouts, &m_pipeline))
 		return false;
 
-	m_tileSetInstance = CreateTileSetInstance_Text("Hello World !\nHow are you Dave ?", glm::vec2(50.0f,10.0f), glm::vec2(4.0f));
+	m_tileSetInstance = CreateTileSetInstance_Map("maps/map01.xml");
 
 	return true;
 }

@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<TileSetMapping>
+  <vector id="elements">
+    <TileSetMapping_Element>
+      <u32 id="id">1</u32>
+      <uvec3 id="color">127,127,127</uvec3>
+    </TileSetMapping_Element>
+    <TileSetMapping_Element>
+      <u32 id="id">2</u32>
+      <uvec3 id="color">100,50,0</uvec3>
+    </TileSetMapping_Element>
+	<TileSetMapping_Element>
+      <u32 id="id">3</u32>
+      <uvec3 id="color">16,128,64</uvec3>
+    </TileSetMapping_Element>
+	<TileSetMapping_Element>
+      <u32 id="id">20</u32>
+      <uvec3 id="color">230,180,40</uvec3>
+    </TileSetMapping_Element>
+	<TileSetMapping_Element>
+      <u32 id="id">53</u32>
+      <uvec3 id="color">50,90,40</uvec3>
+    </TileSetMapping_Element>
+  </vector>
+</TileSetMapping>

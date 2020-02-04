@@ -177,6 +177,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
+    <ClCompile Include="Bitmap.cpp" />
     <ClCompile Include="ConfigDesc.cpp" />
     <ClCompile Include="RenderDevice.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
@@ -190,12 +191,15 @@
     <ClCompile Include="TileSet.cpp" />
     <ClCompile Include="TileSetDesc.cpp" />
     <ClCompile Include="TileSetInstance.cpp" />
+    <ClCompile Include="TileSetMap.cpp" />
     <ClCompile Include="TileSetModel.cpp" />
+    <ClCompile Include="TileSetInstanceHelper.cpp" />
     <ClCompile Include="xmlClassRegistry.cpp" />
     <ClCompile Include="XMLUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\inc\Engine\Application.h" />
+    <ClInclude Include="..\..\inc\Engine\Bitmap.h" />
     <ClInclude Include="..\..\inc\Engine\ConfigDesc.h" />
     <ClInclude Include="..\..\inc\Engine\RenderDevice.h" />
     <ClInclude Include="..\..\inc\Engine\IndexBuffer.h" />
@@ -212,7 +216,9 @@
     <ClInclude Include="..\..\inc\Engine\TileSet.h" />
     <ClInclude Include="..\..\inc\Engine\TileSetDesc.h" />
     <ClInclude Include="..\..\inc\Engine\TileSetInstance.h" />
+    <ClInclude Include="..\..\inc\Engine\TileSetMap.h" />
     <ClInclude Include="..\..\inc\Engine\TileSetModel.h" />
+    <ClInclude Include="..\..\inc\Engine\TileSetInstanceHelper.h" />
     <ClInclude Include="..\..\inc\Engine\Types.h" />
     <ClInclude Include="..\..\inc\Engine\xmlClassRegistry.h" />
     <ClInclude Include="..\..\inc\Engine\XMLUtils.h" />

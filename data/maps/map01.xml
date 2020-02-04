@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<TileSetMap>
+  <string id="tileSetName">tilesets/world.xml</string>
+  <string id="mapping">tilesets/world_mapping.xml</string>
+  <string id="imageName">maps/map01.png</string>
+</TileSetMap>

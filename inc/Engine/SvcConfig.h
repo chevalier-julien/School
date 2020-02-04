@@ -21,6 +21,7 @@ public:
 	const std::string& GetDataPath() const;
 	const glm::uvec2& GetWindowSize() const;
 	const std::string& GetWindowName() const;
+	const std::string& GetFontTileSetName() const;
 
 private:
 	SvcConfig() {}
@@ -36,4 +37,5 @@ private:
 	std::string	m_dataPath;
 	glm::uvec2	m_windowSize;
 	std::string	m_windowName;
+	std::string m_fontTileSetName;
 };
