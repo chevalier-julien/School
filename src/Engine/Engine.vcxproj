@@ -203,6 +203,7 @@
     <ClInclude Include="..\..\inc\Engine\ConfigDesc.h" />
     <ClInclude Include="..\..\inc\Engine\RenderDevice.h" />
     <ClInclude Include="..\..\inc\Engine\IndexBuffer.h" />
+    <ClInclude Include="..\..\inc\Engine\RenderObject.h" />
     <ClInclude Include="..\..\inc\Engine\Resource.h" />
     <ClInclude Include="..\..\inc\Engine\ResourceManager.h" />
     <ClInclude Include="..\..\inc\Engine\SvcConfig.h" />

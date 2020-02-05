@@ -13,7 +13,6 @@ TileRenderer::TileRenderer()
 	, m_tileSetInstanceDescriptorSetLayout(nullptr)
 	, m_pipeline(nullptr)
 	, m_indexBuffer(nullptr)
-	, m_tileSetInstance(nullptr)
 {
 }
 
@@ -58,17 +57,11 @@ bool TileRenderer::Init(RenderDevice::RenderPass renderPass, size_t viewportWidt
 	if (!RenderDevice::GetInstance()->CreateGraphicsPipeline("tile", renderPass, viewportWidth, viewportHeight, 2, descriptorSetLayouts, &m_pipeline))
 		return false;
 
-	m_tileSetInstance = CreateTileSetInstance_Map("maps/map01.xml");
-
 	return true;
 }
 
 void TileRenderer::Release()
 {
-	m_tileSetInstance->Release();
-	delete m_tileSetInstance;
-	m_tileSetInstance = nullptr;
-
 	RenderDevice::GetInstance()->DestroyGraphicsPipeline(m_pipeline);
 	m_pipeline = nullptr;
 
@@ -84,7 +77,10 @@ void TileRenderer::Release()
 
 void TileRenderer::Prepare()
 {
-	m_tileMap.push_back(m_tileSetInstance);
+	for (const TileSetInstance* instance : TileSetInstance::GetCollection())
+	{
+		m_tileMap.push_back(instance);
+	}
 }
 
 void TileRenderer::Render(RenderDevice::CommandBuffer commandBuffer, RenderDevice::DescriptorSet globalDescriptorSet)

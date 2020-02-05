@@ -149,5 +149,8 @@
     <ClInclude Include="..\..\inc\Engine\Bitmap.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\inc\Engine\RenderObject.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "RenderDevice.h"
+#include "RenderObject.h"
 
 #include <memory>
 #include <glm/vec2.hpp>
@@ -9,7 +10,7 @@
 class TileSet;
 class TileSetModel;
 
-class TileSetInstance
+class TileSetInstance : public RenderObject< TileSetInstance >
 {
 public:
 	struct Infos
@@ -27,6 +28,8 @@ public:
 	RenderDevice::DescriptorSet	GetDescriptorSet() const;
 
 private:
+	static std::vector<TileSetInstance*>		ms_collection;
+
 	std::shared_ptr<TileSet>			m_tileSet;
 	std::shared_ptr<TileSetModel>	m_model;
 	RenderDevice::Buffer				m_infosBuffer;

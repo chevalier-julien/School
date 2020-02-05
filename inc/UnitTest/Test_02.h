@@ -2,6 +2,8 @@
 
 #include "Engine\Application.h"
 
+class TileSetInstance;
+
 class Test_02 : public Application
 {
 public:
@@ -10,6 +12,9 @@ public:
 public:
 	virtual bool Init();
 	virtual void Release();
+
+private:
+	TileSetInstance* m_tileSetInstance;
 };
 
 

@@ -4,6 +4,8 @@
 #include "TileSet.h"
 #include "TileSetModel.h"
 
+DEFINE_RENDER_OBJECT( TileSetInstance );
+
 TileSetInstance::TileSetInstance()
 	: m_infosBuffer(nullptr)
 	, m_descriptorSet(nullptr)

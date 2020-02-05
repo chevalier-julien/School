@@ -31,8 +31,6 @@ private:
 	RenderDevice::Pipeline m_pipeline;
 	RenderDevice::Buffer m_indexBuffer;
 
-	TileSetInstance* m_tileSetInstance;
-
-	typedef std::vector<TileSetInstance*> TileMap;
+	typedef std::vector<const TileSetInstance*> TileMap;
 	TileMap m_tileMap;
 };
