@@ -57,7 +57,7 @@ bool TileSetInstance::Init(const std::shared_ptr<TileSet>& tileSet, const std::s
 
 void TileSetInstance::Release()
 {
-	RenderDevice::GetInstance()->DestroyBuffer(m_infosBuffer);
+	RenderDevice::GetInstance()->DeferredDestroy(m_infosBuffer, &RenderDevice::DestroyBuffer);
 	m_infosBuffer = nullptr;
 
 	m_model = nullptr;

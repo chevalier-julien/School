@@ -10,7 +10,7 @@ class IResource
 {
 public:
 	virtual bool Load(const char* name) = 0;
-	virtual void Unload() = 0;
+	//virtual void Unload() = 0;
 	//virtual bool Save(const char* name) = 0;
 };
 
@@ -88,7 +88,6 @@ public:
 				ms_instance->m_mapByAddr.erase(it);
 				ms_instance->m_mapByName.erase(e->name);
 
-				res->Unload();
 				delete e;
 			}
 		}

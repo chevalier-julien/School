@@ -93,14 +93,17 @@ TileSetInstance* CreateTileSetInstance_Map(const std::string& filename, const gl
 			return nullptr;
 
 		unsigned char* p = image.GetData();
-		for (int j = 0; j < image.GetHeight(); ++j)
+		for (size_t j = 0; j < image.GetHeight(); ++j)
 		{
-			for (int i = 0; i < image.GetWidth(); ++i, p += 4)
+			float y = static_cast<float>(((image.GetHeight() - 1) - j) * tileSet->GetTileSize());
+			for (size_t i = 0; i < image.GetWidth(); ++i, p += 4)
 			{
+				float x = static_cast<float>(i * tileSet->GetTileSize());
+
 				std::map<u32, u32>::const_iterator e = colorToID.find(uvec3ToColor(glm::uvec3(p[0], p[1], p[2])));
 				if (e != colorToID.end())
 				{
-					TileSetModel::TileData data = { e->second, glm::vec4(i * tileSet->GetTileSize(), j * tileSet->GetTileSize(),1.0f,1.0f) };
+					TileSetModel::TileData data = { e->second, glm::vec4(x, y, 1.0f, 1.0f) };
 					tileData.push_back(data);
 				}
 			}

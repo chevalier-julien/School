@@ -58,10 +58,10 @@ bool TileSet::Init(const TileSetDesc& desc)
 
 void TileSet::Release()
 {
-	RenderDevice::GetInstance()->DestroyBuffer(m_infosBuffer);
+	RenderDevice::GetInstance()->DeferredDestroy(m_infosBuffer, &RenderDevice::DestroyBuffer);
 	m_infosBuffer = nullptr;
 
-	RenderDevice::GetInstance()->DestroyTexture(m_texture);
+	RenderDevice::GetInstance()->DeferredDestroy(m_texture, &RenderDevice::DestroyTexture);
 	m_texture = nullptr;
 }
 
@@ -75,11 +75,6 @@ bool TileSet::Load(const char* filename)
 		return false;
 
 	return Init(desc);
-}
-
-void TileSet::Unload()
-{
-	Release();
 }
 
 u32 TileSet::GetTileSize() const							{ return m_tileSize; }

@@ -32,7 +32,7 @@ bool TileSetModel::Init(u32 tileCount, const TileData* tileData)
 
 void TileSetModel::Release()
 {
-	RenderDevice::GetInstance()->DestroyBuffer(m_tileBuffer);
+	RenderDevice::GetInstance()->DeferredDestroy(m_tileBuffer, &RenderDevice::DestroyBuffer);
 	m_tileBuffer = nullptr;
 }
 

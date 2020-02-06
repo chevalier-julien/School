@@ -108,6 +108,36 @@ public:
 		SamplerType_Count
 	};
 
+	class IDeferredDestroyItem
+	{
+	public:
+		virtual void Destroy() = 0;
+	};
+
+	template< typename T>
+	class DeferredDestroyItem : public IDeferredDestroyItem
+	{
+	public:
+		typedef void (RenderDevice::*Func)(T);
+
+	public:
+		DeferredDestroyItem(T o, Func f) : object(o), pFunc(f) {}
+		void Destroy()
+		{
+			(RenderDevice::GetInstance()->*pFunc)(object);
+		}
+
+	public:
+		T object;
+		Func pFunc;
+	};
+
+	template < typename T >
+	void DeferredDestroy(T object, void (RenderDevice::*pFunc)(T))
+	{
+		m_deferredDestroyItems.push_back(new DeferredDestroyItem(object, pFunc));
+	}
+
 public:
 	static bool Create();
 	static void Destroy();
@@ -180,6 +210,8 @@ public:
 	void WaitForFences(size_t count, const Fence* fences, bool waitAll, u64 timeout);
 	void ResetFences(size_t count, const Fence* fences);
 
+	void DeferredDestroy();
+
 private:
 	RenderDevice();
 	~RenderDevice() {}
@@ -245,4 +277,6 @@ private:
 	bool m_enableValidationLayers;
 	std::vector<const char*> m_validationLayers;
 	std::vector<const char*> m_deviceExtensions;
+
+	std::vector< IDeferredDestroyItem* > m_deferredDestroyItems;
 };

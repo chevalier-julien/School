@@ -97,6 +97,8 @@ void SvcRender::Release()
 {
 	m_renderDevice->DeviceWaitIdle();
 
+	m_renderDevice->DeferredDestroy();
+
 	m_tileRenderer.Release();
 
 	m_imagesInFlight.clear();

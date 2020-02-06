@@ -24,7 +24,6 @@ public:
 	void Release();
 
 	bool Load(const char* filename);
-	void Unload();
 
 	u32 GetTileSize() const;
 	u32 GetSetSize() const;

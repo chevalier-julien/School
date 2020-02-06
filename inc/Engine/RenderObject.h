@@ -8,11 +8,11 @@ class RenderObject
 public:
 	RenderObject()
 	{
-		ms_collection.insert((T*)this);
+		ms_collection.insert(reinterpret_cast<T*>(this));
 	}
 	virtual ~RenderObject()
 	{
-		ms_collection.erase((T*)this);
+		ms_collection.erase(reinterpret_cast<T*>(this));
 	}
 
 	static const std::unordered_set<T*>& GetCollection() { return ms_collection; }

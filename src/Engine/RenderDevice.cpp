@@ -568,7 +568,7 @@ bool RenderDevice::CreateGraphicsPipeline(const char* shaderName, RenderPass ren
 	rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
 	rasterizer.lineWidth = 1.0f;
 	rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
-	rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
+	rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
 	rasterizer.depthBiasEnable = VK_FALSE;
 
 	VkPipelineMultisampleStateCreateInfo multisampling = {};
@@ -888,6 +888,16 @@ void RenderDevice::WaitForFences(size_t count, const Fence* fences, bool waitAll
 void RenderDevice::ResetFences(size_t count, const Fence* fences)
 {
 	vkResetFences(m_device, static_cast<uint32_t>(count), fences);
+}
+
+void RenderDevice::DeferredDestroy()
+{
+	for (IDeferredDestroyItem* item : m_deferredDestroyItems)
+	{
+		item->Destroy();
+		delete item;
+	}
+	m_deferredDestroyItems.clear();
 }
 
 RenderDevice::RenderDevice()

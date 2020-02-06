@@ -38,10 +38,10 @@ vec2 offsets[4] = vec2[](
 );
 
 vec2 uvs[4] = vec2[](
-    vec2(0.0, 0.0),
-    vec2(1.0, 0.0),
     vec2(0.0, 1.0),
-	vec2(1.0, 1.0)
+    vec2(1.0, 1.0),
+    vec2(0.0, 0.0),
+	vec2(1.0, 0.0)
 );
 
 vec3 colors[4] = vec3[](
@@ -59,11 +59,11 @@ void main()
 	p = p * gInstance.position_scale.zw + gInstance.position_scale.xy;
 
 	uvec2 tileCoord = uvec2(tileData.id%gTileSet.sizes.y, tileData.id/gTileSet.sizes.y);
-	vec2 uv = (vec2(tileCoord) + offsets[gl_VertexIndex]) / float(gTileSet.sizes.y);
+	vec2 uv = (vec2(tileCoord) + uvs[gl_VertexIndex]) / float(gTileSet.sizes.y);
 
 	//////
 	
-    gl_Position = vec4(p * gParams.viewportSize.zw * 2.0 - vec2(1.0), 0.0, 1.0);
+    gl_Position = vec4(p * gParams.viewportSize.zw * vec2(2.0,-2.0) + vec2(-1.0,1.0), 0.0, 1.0);
 	
 	texCoords = uv;
     fragColor = colors[gl_VertexIndex];
