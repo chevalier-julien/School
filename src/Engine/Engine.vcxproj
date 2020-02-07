@@ -195,7 +195,7 @@
     <ClCompile Include="TileSetModel.cpp" />
     <ClCompile Include="TileSetInstanceHelper.cpp" />
     <ClCompile Include="xmlClassRegistry.cpp" />
-    <ClCompile Include="XMLUtils.cpp" />
+    <ClCompile Include="xmlUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\inc\Engine\Application.h" />
@@ -222,7 +222,7 @@
     <ClInclude Include="..\..\inc\Engine\TileSetInstanceHelper.h" />
     <ClInclude Include="..\..\inc\Engine\Types.h" />
     <ClInclude Include="..\..\inc\Engine\xmlClassRegistry.h" />
-    <ClInclude Include="..\..\inc\Engine\XMLUtils.h" />
+    <ClInclude Include="..\..\inc\Engine\xmlUtils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,6 +1,6 @@
 #include "xmlClassRegistry.h"
 
-#include "XMLUtils.h"
+#include "xmlUtils.h"
 #include "ConfigDesc.h"
 #include "TileSetDesc.h"
 #include "TileSetMap.h"

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "XMLUtils.h"
+#include "xmlUtils.h"
 
 class TileSetInstance;
 

@@ -1,4 +1,4 @@
-#include "XMLUtils.h"
+#include "xmlUtils.h"
 
 
 void xmlClassMemberContainer::PushBack(xmlClassMember* member)
