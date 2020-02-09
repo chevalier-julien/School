@@ -3,6 +3,7 @@
 #include "SvcLog.h"
 #include "SvcWindow.h"
 #include "RenderDevice.h"
+#include "DeferredFunc.h"
 
 SvcRender* SvcRender::ms_instance = nullptr;
 
@@ -60,6 +61,9 @@ bool SvcRender::Init()
 	if (!createSwapChain())
 		return false;
 
+	if (!createRenderDeferredContainers())
+		return false;
+
 	if (!createImageViews())
 		return false;
 
@@ -96,8 +100,6 @@ bool SvcRender::Init()
 void SvcRender::Release()
 {
 	m_renderDevice->DeviceWaitIdle();
-
-	m_renderDevice->DeferredDestroy();
 
 	m_tileRenderer.Release();
 
@@ -147,6 +149,8 @@ void SvcRender::Release()
 	}
 	m_swapchainImageViews.clear();
 
+	RenderDeferredHandler_Destroy::Destroy();
+
 	m_renderDevice->DestroySwapchain(m_swapchain);
 	m_swapchain = nullptr;
 
@@ -157,6 +161,12 @@ void SvcRender::Release()
 bool SvcRender::createSwapChain()
 {
 	return m_renderDevice->CreateSwapchain(&m_swapchain);
+}
+
+bool SvcRender::createRenderDeferredContainers()
+{
+	RenderDeferredHandler_Destroy::Create(m_swapchain->images.size());
+	return true;
 }
 
 bool SvcRender::createImageViews()
@@ -321,6 +331,8 @@ void SvcRender::cleanupSwapChain()
 	}
 	m_swapchainImageViews.clear();
 
+	RenderDeferredHandler_Destroy::Destroy();
+
 	m_renderDevice->DestroySwapchain(m_swapchain);
 	m_swapchain = nullptr;
 }
@@ -340,6 +352,9 @@ bool SvcRender::recreateSwapChain()
 	cleanupSwapChain();
 
 	if (!createSwapChain())
+		return false;
+
+	if (!createRenderDeferredContainers())
 		return false;
 
 	if (!createImageViews())
@@ -410,6 +425,8 @@ bool SvcRender::BeginFrame()
 		return false;
 	}
 
+	RenderDeferredHandler_Destroy::GetInstance()->BeginFrame();
+
 	return true;
 }
 
@@ -427,6 +444,17 @@ bool SvcRender::Prepare()
 		m_renderDevice->WaitForFences(1, &m_imagesInFlight[m_imageIndex], VK_TRUE, UINT64_MAX);
 	}
 	m_imagesInFlight[m_imageIndex] = m_inFlightFences[m_currentFrame];
+
+	// deferred destroy
+	size_t frameStatusMask = 0;
+	for (size_t i = 0; i < m_inFlightFences.size(); ++i)
+	{
+		if (m_renderDevice->GetFenceStatus(m_inFlightFences[i]) == VK_SUCCESS)
+		{
+			frameStatusMask |= size_t(1) << i;
+		}
+	}
+	RenderDeferredHandler_Destroy::GetInstance()->DestroyItems(frameStatusMask);
 
 	return true;
 }

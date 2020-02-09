@@ -1,5 +1,7 @@
 #include "TileSetModel.h"
 
+#include "DeferredFunc.h"
+
 TileSetModel::TileSetModel()
 	: m_tileCount(0)
 	, m_tileBuffer(nullptr)
@@ -32,7 +34,7 @@ bool TileSetModel::Init(u32 tileCount, const TileData* tileData)
 
 void TileSetModel::Release()
 {
-	RenderDevice::GetInstance()->DeferredDestroy(m_tileBuffer, &RenderDevice::DestroyBuffer);
+	RenderDeferred_Destroy(m_tileBuffer, &RenderDevice::DestroyBuffer);
 	m_tileBuffer = nullptr;
 }
 

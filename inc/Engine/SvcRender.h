@@ -30,6 +30,7 @@ private:
 	void Release();
 
 	bool createSwapChain();
+	bool createRenderDeferredContainers();
 	bool createImageViews();
 	bool createRenderPass();
 	bool createFramebuffers();

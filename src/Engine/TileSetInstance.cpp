@@ -3,6 +3,7 @@
 #include "SvcRender.h"
 #include "TileSet.h"
 #include "TileSetModel.h"
+#include "DeferredFunc.h"
 
 DEFINE_RENDER_OBJECT( TileSetInstance );
 
@@ -57,7 +58,7 @@ bool TileSetInstance::Init(const std::shared_ptr<TileSet>& tileSet, const std::s
 
 void TileSetInstance::Release()
 {
-	RenderDevice::GetInstance()->DeferredDestroy(m_infosBuffer, &RenderDevice::DestroyBuffer);
+	RenderDeferred_Destroy(m_infosBuffer, &RenderDevice::DestroyBuffer);
 	m_infosBuffer = nullptr;
 
 	m_model = nullptr;

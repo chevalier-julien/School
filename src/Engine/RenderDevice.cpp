@@ -890,14 +890,9 @@ void RenderDevice::ResetFences(size_t count, const Fence* fences)
 	vkResetFences(m_device, static_cast<uint32_t>(count), fences);
 }
 
-void RenderDevice::DeferredDestroy()
+RenderDevice::Result RenderDevice::GetFenceStatus(Fence fence)
 {
-	for (IDeferredDestroyItem* item : m_deferredDestroyItems)
-	{
-		item->Destroy();
-		delete item;
-	}
-	m_deferredDestroyItems.clear();
+	return vkGetFenceStatus(m_device, fence);
 }
 
 RenderDevice::RenderDevice()

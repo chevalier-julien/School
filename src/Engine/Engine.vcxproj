@@ -179,6 +179,7 @@
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Bitmap.cpp" />
     <ClCompile Include="ConfigDesc.cpp" />
+    <ClCompile Include="DeferredFunc.cpp" />
     <ClCompile Include="RenderDevice.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="SvcConfig.cpp" />
@@ -201,6 +202,7 @@
     <ClInclude Include="..\..\inc\Engine\Application.h" />
     <ClInclude Include="..\..\inc\Engine\Bitmap.h" />
     <ClInclude Include="..\..\inc\Engine\ConfigDesc.h" />
+    <ClInclude Include="..\..\inc\Engine\DeferredFunc.h" />
     <ClInclude Include="..\..\inc\Engine\RenderDevice.h" />
     <ClInclude Include="..\..\inc\Engine\IndexBuffer.h" />
     <ClInclude Include="..\..\inc\Engine\RenderObject.h" />

@@ -2,6 +2,7 @@
 
 #include "TileSetDesc.h"
 #include "SvcConfig.h"
+#include "DeferredFunc.h"
 
 #include "Bitmap.h"
 
@@ -58,10 +59,10 @@ bool TileSet::Init(const TileSetDesc& desc)
 
 void TileSet::Release()
 {
-	RenderDevice::GetInstance()->DeferredDestroy(m_infosBuffer, &RenderDevice::DestroyBuffer);
+	RenderDeferred_Destroy(m_infosBuffer, &RenderDevice::DestroyBuffer);
 	m_infosBuffer = nullptr;
 
-	RenderDevice::GetInstance()->DeferredDestroy(m_texture, &RenderDevice::DestroyTexture);
+	RenderDeferred_Destroy(m_texture, &RenderDevice::DestroyTexture);
 	m_texture = nullptr;
 }
 
