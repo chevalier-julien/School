@@ -169,7 +169,7 @@ int main()
 
 	// On peut envoyer plein de choses différentes dans le flux "std::cout".
 	// Par exemple pour afficher des valeurs.
-	std::cout << "Je connais déjà " << 3 << " surfaces." << std::endl;
+	std::cout << "Je connais deja " << 3 << " surfaces." << std::endl;
 	std::cout << "Un terrain de foot fait " << surface_foot << " m^2." << std::endl;
 
 	// "std::cout" a un cousin qui s'appelle "std::cin".

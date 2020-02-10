@@ -19,7 +19,7 @@ int main()
 	// On initialise le générateur de nombres aléatoires avec la fonction "std::srand".
 	// On utilise "std::time" pour récupérer leur courante.
 	// De cette manière, la séquence de nombres aléatoire sera différente à chaque lancement du jeu.
-	std::srand(std::time(nullptr));
+	std::srand((unsigned int)std::time(nullptr));
 
 	// On affiche les règles du jeu.
 	std::cout << "Shi Fu Mi !" << std::endl;
@@ -58,7 +58,7 @@ int main()
 		// Pour le choix du PC, on utilise "std::rand" qui renvoit un nombre aléatoire.
 		// Comme on veut un nombre entre 0 et 2, on utilise l'opérateur "%" ou "modulo".
 		// Il renvoit le reste de la division entière du nombre à gauche par le nombre à droite.
-		// Par exemple : 13%3 renvoit 1 . 13 = 4 x 3 + 1 . 1 est le reste de la division 13 par 3.
+		// Par exemple : 13%3 renvoit 1 . 13 = 4 x 3 + 1 . 1 est le reste de la division de 13 par 3.
 		int choix_PC = std::rand()%3;
 
 		std::cout << "choix PC " << choix_PC << std::endl;
@@ -68,7 +68,7 @@ int main()
 		// Il existe une solution plus simple avec moins de répétitions de code.
 		if (choix_joueur == choix_PC)
 		{
-			std::cout << "Egalité !" << std::endl;
+			std::cout << "Egalite !" << std::endl;
 		}
 		else
 		{
